@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, ArrowRight, Check, Globe2, Mail, MapPin, PackageCheck, ShieldCheck, Ship, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Globe2, Mail, MapPin, PackageCheck, ShieldCheck, Ship, Sparkles } from "lucide-react";
 import { useRef } from "react";
 import { Header } from "./Header";
 import { products } from "@/data/products";
@@ -23,25 +23,13 @@ export function HomePage() {
         <motion.div className="hero-image" style={{ y: heroY, scale: heroScale }} />
         <div className="hero-shade" />
         <Header />
-        <div className="hero-content shell">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .8 }} className="eyebrow"><span /> Indonesia, delivered globally</motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .95, delay: .1, ease }}>
-            Premium Indonesian<br />Products For <em>Global Markets.</em>
-          </motion.h1>
-          <motion.div className="hero-bottom" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, delay: .35, ease }}>
-            <p>Trusted sourcing, quality assurance, and end-to-end export solutions for discerning international buyers.</p>
-            <div className="hero-actions">
-              <a href="#products" className="btn btn-gold">Explore products <ArrowDown size={16} /></a>
-              <a href="#contact" className="btn btn-glass">Request quotation <ArrowRight size={16} /></a>
-            </div>
-          </motion.div>
-        </div>
-        <div className="hero-stats">
-          <div><strong>9+</strong><span>Product categories</span></div>
-          <div><strong>15+</strong><span>Source regions</span></div>
-          <div><strong>100%</strong><span>Export focused</span></div>
-          <div className="hero-origin"><Globe2 size={18} /><span>Origin<br /><b>Indonesia</b></span></div>
-        </div>
+        <a className="hero-quote-hotspot" href="#contact" aria-label="Request quotation for premium vanilla beans" />
+        <motion.div className="mobile-hero-copy shell" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, delay: .2, ease }}>
+          <div className="eyebrow"><span /> Premium Indonesian vanilla</div>
+          <h1>Vanilla <em>Beans</em></h1>
+          <p>Natural, aromatic, and export-ready—sourced with care in Indonesia.</p>
+          <a href="#contact" className="btn btn-gold">Request quotation <ArrowRight size={16} /></a>
+        </motion.div>
       </section>
 
       <section className="intro section shell" id="about">
