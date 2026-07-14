@@ -26,7 +26,7 @@ export function ProductDetail({ product }: { product: Product }) {
         <div className="quick-specs">
           <div><small>Origin</small><b>{product.origin}</b></div><div><small>Minimum order</small><b>{product.moq}</b></div><div><small>Grade</small><b>{product.grade}</b></div><div><small>Lead time</small><b>{product.leadTime}</b></div>
         </div>
-        <a className="btn btn-gold full" href={`https://wa.me/6281234567890?text=${message}`} target="_blank" rel="noreferrer">Request quotation via WhatsApp <ArrowRight size={17}/></a>
+        <a className="btn btn-gold full" href={`https://wa.me/6287810119696?text=${message}`} target="_blank" rel="noreferrer">Request quotation via WhatsApp <ArrowRight size={17}/></a>
         <a className="btn btn-outline full" href={email}>Send inquiry via email <Mail size={17}/></a>
       </motion.div>
     </section>
@@ -40,6 +40,6 @@ export function ProductDetail({ product }: { product: Product }) {
         </div>
       </div>
     </section>
-    <section className="detail-cta"><div className="shell"><h2>Need a custom grade,<br/>pack size, or volume?</h2><p>Share your exact requirements and destination. We’ll prepare a tailored sourcing proposal.</p><a href={`https://wa.me/6281234567890?text=${message}`} className="btn btn-gold">Talk to our export team <ArrowRight size={17}/></a></div></section>
+    <section className="detail-cta"><div className="shell"><h2>Need a custom grade,<br/>pack size, or volume?</h2><p>Share your exact requirements and destination. We’ll prepare a tailored sourcing proposal.</p><a href={`https://wa.me/6287810119696?text=${message}`} className="btn btn-gold">Talk to our export team <ArrowRight size={17}/></a></div></section>
   </main>;
 }

@@ -145,8 +145,8 @@ export function HomePage() {
             <p>Tell us what you’re looking for. Our export team will respond with availability, specifications, and a tailored quotation.</p>
           </motion.div>
           <motion.div {...reveal} className="contact-card">
-            <a className="contact-row" href="https://wa.me/6281234567890?text=Hello%20ALYA%20Global%20Trade%2C%0A%0AI%20am%20interested%20in%20your%20products.%20Please%20provide%20a%20quotation%20and%20additional%20information.%0A%0AThank%20you." target="_blank" rel="noreferrer">
-              <span className="contact-icon">WA</span><span><small>WhatsApp</small><b>+62 812 3456 7890</b></span><ArrowRight />
+            <a className="contact-row" href="https://wa.me/6287810119696?text=Hello%20ALYA%20Global%20Trade%2C%0A%0AI%20am%20interested%20in%20your%20products.%20Please%20provide%20a%20quotation%20and%20additional%20information.%0A%0AThank%20you." target="_blank" rel="noreferrer">
+              <span className="contact-icon">WA</span><span><small>WhatsApp</small><b>+62 878-1011-9696</b></span><ArrowRight />
             </a>
             <a className="contact-row" href="mailto:hello@alyaglobaltrade.com?subject=Product%20Inquiry%20-%20ALYA%20Global%20Trade">
               <span className="contact-icon"><Mail /></span><span><small>Email</small><b>hello@alyaglobaltrade.com</b></span><ArrowRight />
@@ -163,7 +163,7 @@ export function HomePage() {
         <div className="shell footer-top">
           <div><div className="brand footer-brand"><span className="brand-mark">A</span><span>ALYA <b>GLOBAL TRADE</b></span></div><p>Connecting Indonesia to global markets through trusted products and responsible partnerships.</p></div>
           <div><small>Explore</small><a href="#about">About</a><a href="#products">Products</a><a href="#process">How it works</a></div>
-          <div><small>Connect</small><a href="#contact">Contact</a><a href="mailto:hello@alyaglobaltrade.com">Email</a><a href="https://wa.me/6281234567890">WhatsApp</a></div>
+          <div><small>Connect</small><a href="#contact">Contact</a><a href="mailto:hello@alyaglobaltrade.com">Email</a><a href="https://wa.me/6287810119696">WhatsApp</a></div>
           <div><small>Head office</small><p>Jakarta, Indonesia<br />Serving buyers worldwide</p></div>
         </div>
         <div className="shell footer-bottom"><span>© {new Date().getFullYear()} ALYA Global Trade</span><span>Premium Indonesian products · Global business</span></div>
