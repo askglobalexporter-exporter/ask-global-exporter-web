@@ -23,7 +23,7 @@ export function Header() {
       <nav className="desktop-nav" aria-label="Main navigation">
         {links.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}
       </nav>
-      <Link href="/#contact" className="header-cta">Request quotation <span>↗</span></Link>
+      <Link href="/products/vanilla-beans#quotation" className="header-cta">Request quotation <span>↗</span></Link>
       <button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open}>
         {open ? <X size={22} /> : <Menu size={22} />}
       </button>

@@ -23,12 +23,12 @@ export function HomePage() {
         <motion.div className="hero-image" style={{ y: heroY, scale: heroScale }} />
         <div className="hero-shade" />
         <Header />
-        <a className="hero-quote-hotspot" href="#contact" aria-label="Request quotation for premium vanilla beans" />
+        <Link className="hero-quote-hotspot" href="/products/vanilla-beans#quotation" aria-label="Request quotation for premium vanilla beans" />
         <motion.div className="mobile-hero-copy shell" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, delay: .2, ease }}>
           <div className="eyebrow"><span /> Premium Indonesian vanilla</div>
           <h1>Vanilla <em>Beans</em></h1>
           <p>Natural, aromatic, and export-ready—sourced with care in Indonesia.</p>
-          <a href="#contact" className="btn btn-gold">Request quotation <ArrowRight size={16} /></a>
+          <Link href="/products/vanilla-beans#quotation" className="btn btn-gold">Request quotation <ArrowRight size={16} /></Link>
         </motion.div>
       </section>
 
@@ -64,15 +64,15 @@ export function HomePage() {
           <div className="product-grid">
             {products.map((product, index) => (
               <motion.article {...reveal} transition={{ ...reveal.transition, delay: (index % 3) * .08 }} className="product-card" key={product.slug}>
-                <Link href={`/products/${product.slug}`} className="product-image-wrap" aria-label={`View ${product.name}`}>
+                <Link href={product.slug === "premium-vanilla-beans" ? "/products/vanilla-beans" : `/products/${product.slug}`} className="product-image-wrap" aria-label={`View ${product.name}`}>
                   <Image src={product.image} alt={product.name} fill sizes="(max-width: 800px) 100vw, 33vw" className="product-image" />
                   <span className="product-index">0{index + 1}</span>
                   <span className="product-arrow"><ArrowRight size={18} /></span>
                 </Link>
                 <div className="product-meta"><span>{product.category}</span><span>{product.origin}</span></div>
-                <h3><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
+                <h3><Link href={product.slug === "premium-vanilla-beans" ? "/products/vanilla-beans" : `/products/${product.slug}`}>{product.name}</Link></h3>
                 <p>{product.description}</p>
-                <div className="product-footer"><span>MOQ <b>{product.moq}</b></span><Link href={`/products/${product.slug}`}>View product</Link></div>
+                <div className="product-footer"><span>MOQ <b>{product.moq}</b></span><Link href={product.slug === "premium-vanilla-beans" ? "/products/vanilla-beans" : `/products/${product.slug}`}>View product</Link></div>
               </motion.article>
             ))}
           </div>

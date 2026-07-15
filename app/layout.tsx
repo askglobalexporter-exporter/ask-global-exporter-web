@@ -6,7 +6,7 @@ const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"], displa
 const cormorant = Cormorant_Garamond({ variable: "--font-display", subsets: ["latin"], weight: ["500", "600"], display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://alyaglobaltrade.com"),
+  metadataBase: new URL("https://alya-global-trade.vercel.app"),
   title: { default: "ALYA Global Trade — Premium Indonesian Products", template: "%s | ALYA Global Trade" },
   description: "Trusted export partner for premium Indonesian products, international sourcing, quality assurance, and global shipping.",
   keywords: ["Export Company", "Indonesian Products", "International Trade", "Global Supplier", "Wholesale Products"],
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg" },
 };
 
-const schema = { "@context": "https://schema.org", "@type": "Organization", name: "ALYA Global Trade", url: "https://alyaglobaltrade.com", description: "Indonesian export and international trading company", email: "hello@alyaglobaltrade.com", areaServed: "Worldwide", address: { "@type": "PostalAddress", addressLocality: "Jakarta", addressCountry: "ID" } };
+const schema = { "@context": "https://schema.org", "@type": "Organization", name: "ALYA Global Trade", url: "https://alya-global-trade.vercel.app", description: "Indonesian vanilla bean exporter and international supplier", email: "hello@alyaglobaltrade.com", telephone: "+62-878-1011-9696", areaServed: "Worldwide", address: { "@type": "PostalAddress", addressLocality: "Jakarta", addressCountry: "ID" } };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" className={`${manrope.variable} ${cormorant.variable}`}><body>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema)}} /></body></html>;
