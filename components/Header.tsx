@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { BrandLogo } from "./BrandLogo";
 
 const links = [
   ["About", "/#about"],
@@ -17,8 +18,7 @@ export function Header() {
   return (
     <header className="site-header">
       <Link href="/" className="brand" aria-label="Alya Global Trade home">
-        <span className="brand-mark">A</span>
-        <span>ALYA <b>GLOBAL TRADE</b></span>
+        <BrandLogo />
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">
         {links.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}

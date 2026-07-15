@@ -10,17 +10,17 @@ import { QuotationForm } from "./QuotationForm";
 const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-70px" }, transition: { duration: .7 } };
 
 const specs = [
-  ["Botanical name", "Vanilla planifolia"], ["Origin", "Papua & Java, Indonesia"],
-  ["Bean length", "14–20+ cm"], ["Moisture", "25–35% by grade"],
-  ["Vanillin", "Approx. 1.5–2.2%"], ["Appearance", "Dark brown to black, supple"],
-  ["MOQ", "25 kg"], ["Lead time", "14–21 days after confirmation"],
-  ["Shelf life", "Up to 24 months"], ["Incoterms", "EXW, FOB, CFR, CIF, DAP"],
+  ["Botanical name", "Vanilla planifolia"], ["Origin", "Indonesia — exact region confirmed per lot"],
+  ["Bean length", "To be confirmed against buyer specification"], ["Moisture", "Confirmed per approved lot"],
+  ["Vanillin", "Certificate of Analysis when available"], ["Appearance", "Confirmed by grade and approved sample"],
+  ["MOQ", "Available upon request"], ["Lead time", "Confirmed with quotation"],
+  ["Shelf life", "Confirmed by packaging and specification"], ["Incoterms", "EXW, FOB, CFR, CIF, DAP — subject to agreement"],
 ];
 
 const grades = [
-  ["Gourmet Grade A", "16–20+ cm", "30–35%", "Premium culinary, pastry, hospitality"],
-  ["Extraction Grade B", "12–18 cm", "20–25%", "Extract, paste, flavor manufacturing"],
-  ["Cut & Split Beans", "Variable", "20–30%", "Industrial processing and milling"],
+  ["Gourmet Grade A", "To be confirmed", "Confirmed per lot", "Premium culinary, pastry, hospitality"],
+  ["Extraction Grade B", "To be confirmed", "Confirmed per lot", "Extract, paste, flavor manufacturing"],
+  ["Vanilla Cuts", "Custom cut size", "Confirmed per lot", "Industrial processing and milling"],
 ];
 
 const process = [
@@ -35,10 +35,10 @@ const process = [
 const faqs = [
   ["Can I request samples before a bulk order?", "Yes. Qualified buyers can request representative grade samples. Sample and courier costs are confirmed based on destination."],
   ["Which vanilla grades are available?", "We supply Gourmet Grade A, Extraction Grade B, and cut or split beans. Custom sorting by length and moisture can be discussed."],
-  ["What is the minimum order quantity?", "Our standard export MOQ is 25 kg. Trial quantities may be considered depending on grade, packaging, and destination."],
+  ["What is the minimum order quantity?", "MOQ is available upon request and depends on grade, packaging, lot availability, and destination."],
   ["Can you provide private-label packaging?", "Yes. We can support buyer labels, carton markings, inner pack sizes, and other export packaging requirements."],
   ["Which export documents are provided?", "Commercial Invoice and Packing List are standard. Certificate of Origin, Phytosanitary, Fumigation, and other documents are arranged where required."],
-  ["How long does an order take?", "Typical lead time is 14–21 days after specification and payment confirmation, subject to stock, volume, and documentation."],
+  ["How long does an order take?", "Lead time is confirmed with the quotation and depends on lot availability, volume, packaging, and documentation."],
 ];
 
 export function VanillaExportPage() {
@@ -54,7 +54,7 @@ export function VanillaExportPage() {
         <h1>Indonesian<br /><em>Vanilla Beans.</em></h1>
         <p>Export-ready Planifolia vanilla, carefully cured and graded for importers, distributors, manufacturers, and premium food brands.</p>
         <div className="vanilla-hero-actions"><a href="#quotation" className="btn btn-gold">Request quotation <ArrowRight size={16}/></a><a href={whatsapp} target="_blank" rel="noreferrer" className="btn btn-glass">Get price list</a></div>
-        <div className="vanilla-trust"><span><Check /> MOQ from 25 kg</span><span><Check /> Worldwide shipping</span><span><Check /> Export documentation</span></div>
+        <div className="vanilla-trust"><span><Check /> MOQ upon request</span><span><Check /> International shipping</span><span><Check /> Export document support</span></div>
       </div>
     </section>
 
@@ -62,11 +62,11 @@ export function VanillaExportPage() {
       <motion.div {...reveal} className="section-label">01 / Product overview</motion.div>
       <div className="vanilla-intro-grid">
         <motion.div {...reveal}><h2>Built for buyers who need<br /><em>consistency at scale.</em></h2></motion.div>
-        <motion.div {...reveal}><p>Our Indonesian Vanilla planifolia is sourced from selected farms in Papua and Java, then cured through a controlled process to build a rich, creamy, woody aroma. Each export lot is sorted to buyer specification and packed to protect its moisture and character.</p><p>We support importers, ingredient distributors, extract manufacturers, bakeries, hospitality groups, and private-label brands.</p></motion.div>
+        <motion.div {...reveal}><p>Our Indonesian Vanilla planifolia is sourced through selected vanilla-specific suppliers, then cured and sorted against buyer requirements. Exact origin, grade, moisture, and commercial specifications are confirmed per approved lot.</p><p>We support importers, ingredient distributors, extract manufacturers, bakeries, hospitality groups, and private-label brands.</p></motion.div>
       </div>
       <div className="vanilla-origin-grid">
-        <motion.div {...reveal} className="origin-image"><Image src="https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&w=1400&q=90" alt="Cured Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
-        <motion.div {...reveal} className="origin-card"><MapPin/><small>Primary origin</small><h3>Papua & Java,<br/>Indonesia</h3><p>Warm tropical conditions, skilled hand pollination, and a patient curing process create beans with depth, sweetness, and a long aromatic finish.</p><div><span>Species <b>Vanilla planifolia</b></span><span>Harvest <b>Seasonal lots</b></span></div></motion.div>
+        <motion.div {...reveal} className="origin-image"><Image src="/vanilla-grade-a.png" alt="Cured Indonesian Grade A vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
+        <motion.div {...reveal} className="origin-card"><MapPin/><small>Country of origin</small><h3>Indonesia</h3><p>Exact farm or supplier region, harvest information, and traceability scope are confirmed against the selected lot and commercial agreement.</p><div><span>Species <b>Vanilla planifolia</b></span><span>Availability <b>Confirmed per lot</b></span></div></motion.div>
       </div>
     </section>
 
@@ -82,9 +82,9 @@ export function VanillaExportPage() {
     <section className="vanilla-gallery vanilla-section shell">
       <motion.div {...reveal} className="section-label">03 / Product gallery</motion.div>
       <div className="vanilla-gallery-grid">
-        <motion.div {...reveal} className="gallery-large"><Image src="https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&w=1600&q=90" alt="Whole premium vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
-        <motion.div {...reveal}><Image src="https://images.unsplash.com/photo-1616684000067-36952fde56ec?auto=format&fit=crop&w=1000&q=88" alt="Vanilla for culinary applications" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
-        <motion.div {...reveal} className="gallery-detail"><Image src="/hero-vanilla.png" alt="Vacuum-packed vanilla export presentation" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
+        <motion.div {...reveal} className="gallery-large"><Image src="/vanilla-grade-a.png" alt="Whole premium Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
+        <motion.div {...reveal}><Image src="/vanilla-grade-b.png" alt="Extraction-grade Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
+        <motion.div {...reveal} className="gallery-detail"><Image src="/vanilla-cuts.png" alt="Indonesian vanilla cuts for extraction" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
       </div>
     </section>
 

@@ -1,6 +1,10 @@
+export type ProductSpecification = { label: string; value: string };
+export type ProductFaq = { question: string; answer: string };
+
 export type Product = {
   slug: string;
   name: string;
+  shortName: string;
   category: string;
   origin: string;
   moq: string;
@@ -8,116 +12,93 @@ export type Product = {
   image: string;
   gallery: string[];
   grade: string;
+  typicalLength: string;
+  moisture: string;
+  application: string;
   packaging: string[];
   leadTime: string;
   shipping: string;
+  monthlyCapacity: string;
+  specifications: ProductSpecification[];
+  faqs: ProductFaq[];
+  seoTitle: string;
+  seoDescription: string;
 };
+
+const sharedFaqs: ProductFaq[] = [
+  { question: "Can we request a sample before ordering?", answer: "Yes. Sample availability is subject to approval, and shipping fees may apply. Specifications are confirmed before dispatch." },
+  { question: "Can specifications be customized?", answer: "Custom sorting, packaging, and commercial specifications can be discussed and confirmed against an approved lot or sample." },
+  { question: "Which Incoterms are available?", answer: "EXW, FOB, CFR, CIF, and DAP may be discussed. The final term depends on the destination, shipment size, and agreement." },
+  { question: "Can you support repeat monthly orders?", answer: "Repeat-order sourcing support is available. Monthly capacity and seasonal availability are confirmed during quotation." },
+];
+
+const commonSpecs = (grade: string, form: string): ProductSpecification[] => [
+  { label: "Botanical name", value: "Vanilla planifolia" },
+  { label: "Origin", value: "Indonesia — exact region confirmed per lot" },
+  { label: "Grade", value: grade },
+  { label: "Length", value: "To be confirmed against buyer specification" },
+  { label: "Moisture", value: "Confirmed per approved lot" },
+  { label: "Vanillin content", value: "Certificate of Analysis when available" },
+  { label: "Appearance", value: form },
+  { label: "Color", value: "Dark brown to black; confirmed per lot" },
+  { label: "Texture", value: "Confirmed by sample and grade" },
+  { label: "Aroma", value: "Rich vanilla profile; lot sample available" },
+  { label: "Packaging", value: "Vacuum pack or custom export packaging" },
+  { label: "MOQ", value: "Available upon request" },
+  { label: "Lead time", value: "Confirmed with quotation" },
+  { label: "Shelf life", value: "Confirmed by packaging and specification" },
+  { label: "Storage", value: "Cool, dry place away from direct sunlight" },
+];
 
 export const products: Product[] = [
   {
-    slug: "premium-vanilla-beans",
-    name: "Premium Vanilla Beans",
-    category: "Spices",
-    origin: "Papua, Indonesia",
-    moq: "25 kg",
-    description: "Hand-selected Planifolia vanilla with a deep, creamy aroma and consistent moisture for culinary and industrial buyers.",
-    image: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&w=1400&q=85",
-    gallery: [
-      "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&w=1600&q=90",
-      "https://images.unsplash.com/photo-1616684000067-36952fde56ec?auto=format&fit=crop&w=1400&q=85",
-    ],
-    grade: "Grade A, 16–20 cm",
-    packaging: ["Vacuum pack", "Food-grade carton", "Custom private label"],
-    leadTime: "14–21 days",
-    shipping: "Air freight & sea freight worldwide",
+    slug: "grade-a-vanilla-beans", name: "Grade A Vanilla Beans", shortName: "Grade A", category: "Whole Vanilla Beans",
+    origin: "Indonesia", moq: "Available upon request", grade: "Premium / Gourmet Grade A",
+    typicalLength: "To be confirmed", moisture: "Confirmed per lot", application: "Premium culinary, pastry, hospitality, retail",
+    description: "Premium whole Indonesian vanilla beans selected for appearance, flexibility, aroma, and buyer-specific requirements.",
+    image: "/vanilla-grade-a.png", gallery: ["/vanilla-grade-a.png", "/hero-vanilla.png", "/vanilla-grade-b.png"],
+    packaging: ["Vacuum-sealed inner packs", "Food-grade export cartons", "Custom pack sizes upon agreement"],
+    leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
+    specifications: commonSpecs("Premium / Gourmet Grade A", "Whole, cured vanilla beans"), faqs: sharedFaqs,
+    seoTitle: "Grade A Vanilla Beans Indonesia | Premium Export Supplier",
+    seoDescription: "Source premium Grade A Indonesian vanilla beans with buyer-specific sorting, vacuum packaging, samples, and export documentation support.",
   },
   {
-    slug: "gayo-arabica-coffee",
-    name: "Gayo Arabica Coffee",
-    category: "Coffee",
-    origin: "Aceh, Indonesia",
-    moq: "1 metric ton",
-    description: "Specialty-grade green beans from the Gayo highlands, valued for a clean cup, floral notes, and balanced body.",
-    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1400&q=85",
-    gallery: [
-      "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=90",
-      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85",
-    ],
-    grade: "Specialty, 80+ cup score",
-    packaging: ["60 kg jute bag", "GrainPro liner", "Custom bulk packaging"],
-    leadTime: "21–30 days",
-    shipping: "Sea freight from Belawan",
+    slug: "grade-b-vanilla-beans", name: "Grade B Vanilla Beans", shortName: "Grade B", category: "Extraction Vanilla Beans",
+    origin: "Indonesia", moq: "Available upon request", grade: "Extraction Grade B",
+    typicalLength: "To be confirmed", moisture: "Confirmed per lot", application: "Vanilla extract, paste, flavor manufacturing",
+    description: "Extraction-focused whole vanilla beans supplied to ingredient processors and manufacturers against agreed specifications.",
+    image: "/vanilla-grade-b.png", gallery: ["/vanilla-grade-b.png", "/vanilla-grade-a.png", "/vanilla-cuts.png"],
+    packaging: ["Vacuum-sealed bulk packs", "Food-grade export cartons", "Custom industrial packaging"],
+    leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
+    specifications: commonSpecs("Extraction Grade B", "Whole cured beans; appearance varies by lot"), faqs: sharedFaqs,
+    seoTitle: "Grade B Vanilla Beans Indonesia | Extraction Grade Supplier",
+    seoDescription: "Indonesian Grade B vanilla beans for extraction and manufacturing, supplied with editable specifications and export support.",
   },
   {
-    slug: "desiccated-coconut",
-    name: "Desiccated Coconut",
-    category: "Coconut Products",
-    origin: "Sulawesi, Indonesia",
-    moq: "2 metric tons",
-    description: "Fine, naturally white coconut with controlled moisture and food-grade processing for bakery and confectionery production.",
-    image: "https://images.unsplash.com/photo-1580984969071-a8da5656c2fb?auto=format&fit=crop&w=1400&q=85",
-    gallery: [
-      "https://images.unsplash.com/photo-1580984969071-a8da5656c2fb?auto=format&fit=crop&w=1600&q=90",
-      "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=1400&q=85",
-    ],
-    grade: "Fine & medium grade",
-    packaging: ["25 kg kraft bag", "PE inner liner", "Palletized"],
-    leadTime: "14–21 days",
-    shipping: "Reefer or dry container worldwide",
+    slug: "vanilla-cuts", name: "Vanilla Cuts", shortName: "Vanilla Cuts", category: "Processed Vanilla",
+    origin: "Indonesia", moq: "Available upon request", grade: "Cut Vanilla / Extraction Material",
+    typicalLength: "Custom cut size", moisture: "Confirmed per lot", application: "Extraction, milling, industrial processing",
+    description: "Cut cured vanilla bean material prepared for extraction, milling, and industrial ingredient applications.",
+    image: "/vanilla-cuts.png", gallery: ["/vanilla-cuts.png", "/vanilla-grade-b.png", "/vanilla-powder.png"],
+    packaging: ["Vacuum-sealed bulk packs", "Food-grade liner and carton", "Custom cut and pack specification"],
+    leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
+    specifications: commonSpecs("Vanilla Cuts", "Cut cured vanilla bean segments"), faqs: sharedFaqs,
+    seoTitle: "Vanilla Cuts Indonesia | Bulk Extraction Supplier",
+    seoDescription: "Source Indonesian vanilla cuts for extraction and industrial applications with custom sizing and export-ready packaging.",
   },
   {
-    slug: "whole-black-pepper",
-    name: "Whole Black Pepper",
-    category: "Spices",
-    origin: "Lampung, Indonesia",
-    moq: "500 kg",
-    description: "Bold Lampung peppercorns with strong pungency, uniform grading, and export-ready cleaning and packing.",
-    image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1400&q=85",
-    gallery: [
-      "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=90",
-      "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=1400&q=85",
-    ],
-    grade: "500–550 GL",
-    packaging: ["25 kg PP bag", "Kraft paper bag", "Buyer specification"],
-    leadTime: "14–21 days",
-    shipping: "Sea freight from Tanjung Priok",
-  },
-  {
-    slug: "rattan-lounge-chair",
-    name: "Artisan Rattan Lounge Chair",
-    category: "Furniture",
-    origin: "Cirebon, Indonesia",
-    moq: "50 units",
-    description: "Handwoven natural rattan furniture shaped by skilled artisans and finished for hospitality and premium retail collections.",
-    image: "https://images.unsplash.com/photo-1598300056393-4aac492f4344?auto=format&fit=crop&w=1400&q=85",
-    gallery: [
-      "https://images.unsplash.com/photo-1598300056393-4aac492f4344?auto=format&fit=crop&w=1600&q=90",
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1400&q=85",
-    ],
-    grade: "Commercial hospitality grade",
-    packaging: ["Export carton", "Protective wrap", "Custom labeling"],
-    leadTime: "30–45 days",
-    shipping: "FCL sea freight worldwide",
-  },
-  {
-    slug: "organic-turmeric",
-    name: "Organic Turmeric",
-    category: "Herbal Products",
-    origin: "Java, Indonesia",
-    moq: "500 kg",
-    description: "Vibrant dried turmeric fingers with high natural color, carefully sourced and traceable to partner farms.",
-    image: "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=1400&q=85",
-    gallery: [
-      "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=1600&q=90",
-      "https://images.unsplash.com/photo-1609241801035-05b669e166bf?auto=format&fit=crop&w=1400&q=85",
-    ],
-    grade: "Whole dried fingers",
-    packaging: ["20 kg kraft bag", "Food-grade liner", "Custom milling available"],
-    leadTime: "14–21 days",
-    shipping: "Air & sea freight worldwide",
+    slug: "vanilla-powder", name: "Vanilla Powder", shortName: "Vanilla Powder", category: "Processed Vanilla",
+    origin: "Indonesia", moq: "Available upon request", grade: "Ground Vanilla — availability to be confirmed",
+    typicalLength: "Fine powder", moisture: "Confirmed per lot", application: "Dry blends, bakery, food manufacturing",
+    description: "Ground vanilla material for dry applications. Commercial availability, mesh size, and specification must be confirmed before quotation.",
+    image: "/vanilla-powder.png", gallery: ["/vanilla-powder.png", "/vanilla-cuts.png", "/vanilla-grade-a.png"],
+    packaging: ["Food-grade sealed inner packs", "Export carton", "Custom pack sizes upon agreement"],
+    leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
+    specifications: commonSpecs("Ground Vanilla — subject to availability", "Fine ground vanilla material"), faqs: sharedFaqs,
+    seoTitle: "Vanilla Powder Indonesia | Bulk Vanilla Ingredient",
+    seoDescription: "Indonesian vanilla powder for B2B ingredient applications, subject to confirmed availability and buyer specification.",
   },
 ];
 
-export function getProduct(slug: string) {
-  return products.find((product) => product.slug === slug);
-}
+export function getProduct(slug: string) { return products.find((product) => product.slug === slug); }
