@@ -20,6 +20,7 @@ export async function POST(request: Request) {
       consent: data.consent, source_page: data.sourcePage || "/products",
     });
     if (error) throw error;
+    await supabase.from("site_events").insert({ event_type: "rfq_submitted", path: data.sourcePage || "/products", product_slug: data.product });
     return NextResponse.json({ ok: true, reference }, { status: 201 });
   } catch { return NextResponse.json({ error: "We could not submit your inquiry. Please try again or use WhatsApp." }, { status: 500 }); }
 }

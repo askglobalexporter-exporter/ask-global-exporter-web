@@ -7,20 +7,24 @@ import { ArrowRight, Check, Globe2, Mail, MapPin, PackageCheck, ShieldCheck, Shi
 import { useRef } from "react";
 import { Header } from "./Header";
 import { BrandLogo } from "./BrandLogo";
-import { products } from "@/data/products";
+import { products as fallbackProducts, type Product } from "@/data/products";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: .75, ease } };
 
-export function HomePage() {
+type SectionConfig = Record<string, { position: number; is_visible: boolean }>;
+
+export function HomePage({ catalog = fallbackProducts, sectionConfig = {} }: { catalog?: Product[]; sectionConfig?: SectionConfig }) {
   const hero = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: hero, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1.02, 1.12]);
 
+  const visible = (key: string) => sectionConfig[key]?.is_visible ?? true;
+  const order = (key: string) => ({ order: sectionConfig[key]?.position ?? 0 });
   return (
-    <main>
-      <section className="hero" ref={hero}>
+    <main style={{ display: "flex", flexDirection: "column" }}>
+      {visible("hero") && <section className="hero" ref={hero} style={order("hero")}>
         <motion.div className="hero-image" style={{ y: heroY, scale: heroScale }} />
         <div className="hero-shade" />
         <Header />
@@ -31,9 +35,9 @@ export function HomePage() {
           <p>Natural, aromatic, and export-ready—sourced with care in Indonesia.</p>
           <Link href="/products/vanilla-beans#quotation" className="btn btn-gold">Request quotation <ArrowRight size={16} /></Link>
         </motion.div>
-      </section>
+      </section>}
 
-      <section className="intro section shell" id="about">
+      {visible("about") && <section className="intro section shell" id="about" style={order("about")}>
         <motion.div {...reveal} className="section-label">01 / Who we are</motion.div>
         <div className="intro-grid">
           <motion.h2 {...reveal}>From the heart of Indonesia,<br /><em>to businesses worldwide.</em></motion.h2>
@@ -55,9 +59,9 @@ export function HomePage() {
             </div>
           </div>
         </motion.div>
-      </section>
+      </section>}
 
-      <section className="products-section section" id="products">
+      {visible("products") && <section className="products-section section" id="products" style={order("products")}>
         <div className="shell">
           <motion.div {...reveal} className="section-label">02 / Vanilla product range</motion.div>
           <motion.div {...reveal} className="section-heading">
@@ -65,7 +69,7 @@ export function HomePage() {
             <p>Explore whole-bean grades and processed formats. Final specifications and commercial availability are confirmed per lot and quotation.</p>
           </motion.div>
           <div className="product-grid">
-            {products.map((product, index) => (
+            {catalog.map((product, index) => (
               <motion.article {...reveal} transition={{ ...reveal.transition, delay: (index % 3) * .08 }} className="product-card" key={product.slug}>
                 <Link href={`/products/${product.slug}`} className="product-image-wrap" aria-label={`View ${product.name}`}>
                   <Image src={product.image} alt={product.name} fill sizes="(max-width: 800px) 100vw, 33vw" className="product-image" />
@@ -81,9 +85,9 @@ export function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
-      <section className="why section shell" id="why-us">
+      {visible("focus") && <section className="why section shell" id="why-us" style={order("focus")}>
         <motion.div {...reveal} className="section-label">03 / Our focus</motion.div>
         <motion.div {...reveal} className="section-heading">
           <h2>Indonesian supply,<br /><em>built for global business.</em></h2>
@@ -104,9 +108,9 @@ export function HomePage() {
             </motion.div>
           ))}
         </div>
-      </section>
+      </section>}
 
-      <section className="process section" id="process">
+      {visible("process") && <section className="process section" id="process" style={order("process")}>
         <div className="process-bg" />
         <div className="shell process-content">
           <motion.div {...reveal} className="section-label light">04 / Vanilla export process</motion.div>
@@ -117,9 +121,9 @@ export function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
-      <section className="standards section shell">
+      {visible("compliance") && <section className="standards section shell" style={order("compliance")}>
         <motion.div {...reveal} className="section-label">05 / Compliance ready</motion.div>
         <div className="standards-grid">
           <motion.div {...reveal}><h2>Documentation that<br /><em>supports each shipment.</em></h2><p>Availability depends on destination rules, shipment type, and agreement. We confirm the required document set before order finalization.</p></motion.div>
@@ -127,9 +131,9 @@ export function HomePage() {
             {["Commercial Invoice", "Packing List", "Certificate of Origin", "Phytosanitary", "Fumigation", "Specification Sheet"].map((cert, i) => <div key={cert}><span>0{i+1}</span><b>{cert}</b><small>Subject to shipment requirements</small></div>)}
           </motion.div>
         </div>
-      </section>
+      </section>}
 
-      <section className="contact section" id="contact">
+      {visible("contact") && <section className="contact section" id="contact" style={order("contact")}>
         <div className="shell contact-grid">
           <motion.div {...reveal}>
             <div className="section-label light">06 / Start a conversation</div>
@@ -149,9 +153,9 @@ export function HomePage() {
             <p className="hours">Business hours · Mon–Fri, 09:00–17:00 WIB</p>
           </motion.div>
         </div>
-      </section>
+      </section>}
 
-      <footer>
+      <footer style={{ order: 99 }}>
         <div className="shell footer-top">
           <div><div className="brand footer-brand"><BrandLogo /></div><p>Connecting global buyers with premium Indonesian commodities through consistent, transparent, and reliable trade.</p></div>
           <div><small>Explore</small><a href="#about">About</a><a href="#products">Products</a><a href="#process">How it works</a></div>

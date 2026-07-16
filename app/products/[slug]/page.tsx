@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/ProductDetail";
-import { getProduct, products } from "@/data/products";
+import { getPublishedProduct } from "@/lib/public-content";
 
-export function generateStaticParams() {
-  return products.map(({ slug }) => ({ slug }));
-}
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const product = getProduct((await params).slug);
+  const product = await getPublishedProduct((await params).slug);
   if (!product) return {};
   return { title: product.seoTitle, description: product.seoDescription, alternates:{canonical:`/products/${product.slug}`}, openGraph:{title:product.seoTitle,description:product.seoDescription,images:[product.image]}, twitter:{card:"summary_large_image",title:product.seoTitle,description:product.seoDescription,images:[product.image]} };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const product = getProduct((await params).slug);
+  const product = await getPublishedProduct((await params).slug);
   if (!product) notFound();
   const productSchema = {"@context":"https://schema.org","@type":"Product",name:product.name,description:product.description,image:product.gallery.map(x=>`https://ask-global-exporter-web.vercel.app${x}`),brand:{"@type":"Brand",name:"Ask Global"},countryOfOrigin:"Indonesia"};
   const breadcrumbSchema = {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:"https://ask-global-exporter-web.vercel.app"},{"@type":"ListItem",position:2,name:"Vanilla Products",item:"https://ask-global-exporter-web.vercel.app/#products"},{"@type":"ListItem",position:3,name:product.name,item:`https://ask-global-exporter-web.vercel.app/products/${product.slug}`}]};

@@ -17,6 +17,7 @@ export async function POST(request: Request) {
       intended_use: data.intendedUse, expected_future_order_volume: data.expectedVolume, shipping_address: data.shippingAddress,
       courier_account: data.courierAccount || null, additional_notes: data.notes || null, consent: data.consent, source_page: data.sourcePage || "/products" });
     if (error) throw error;
+    await supabase.from("site_events").insert({ event_type: "sample_submitted", path: data.sourcePage || "/products", product_slug: data.product });
     return NextResponse.json({ ok: true, reference }, { status: 201 });
   } catch { return NextResponse.json({ error: "We could not submit your request. Please try again or use WhatsApp." }, { status: 500 }); }
 }
