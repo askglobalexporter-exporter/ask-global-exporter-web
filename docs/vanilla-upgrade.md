@@ -29,11 +29,11 @@ Run `supabase/migrations/001_b2b_inquiries.sql` in the target Supabase project. 
 
 Current project-owned generated assets:
 
-- `public/vanilla-grade-a.png`
-- `public/vanilla-grade-b.png`
-- `public/vanilla-cuts.png`
-- `public/vanilla-powder.png`
-- `public/hero-vanilla.png`
+- `public/vanilla-grade-a.webp`
+- `public/vanilla-grade-b.webp`
+- `public/vanilla-cuts.webp`
+- `public/vanilla-powder.webp`
+- `public/hero-vanilla.webp`
 
 Recommended future client photography replacements:
 

@@ -46,7 +46,7 @@ export function VanillaExportPage() {
   return <main className="vanilla-page">
     <div className="vanilla-nav"><Header /></div>
     <section className="vanilla-product-hero">
-      <Image src="/hero-vanilla.png" alt="Premium Indonesian vanilla beans for export" fill priority sizes="100vw" />
+      <Image src="/hero-vanilla.webp" alt="Premium Indonesian vanilla beans for export" fill priority sizes="100vw" />
       <div className="vanilla-hero-overlay" />
       <div className="shell vanilla-hero-copy">
         <Link href="/" className="back-link"><ArrowLeft size={15} /> Ask Global</Link>
@@ -65,7 +65,7 @@ export function VanillaExportPage() {
         <motion.div {...reveal}><p>Our Indonesian Vanilla planifolia is sourced through selected vanilla-specific suppliers, then cured and sorted against buyer requirements. Exact origin, grade, moisture, and commercial specifications are confirmed per approved lot.</p><p>We support importers, ingredient distributors, extract manufacturers, bakeries, hospitality groups, and private-label brands.</p></motion.div>
       </div>
       <div className="vanilla-origin-grid">
-        <motion.div {...reveal} className="origin-image"><Image src="/vanilla-grade-a.png" alt="Cured Indonesian Grade A vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
+        <motion.div {...reveal} className="origin-image"><Image src="/vanilla-grade-a.webp" alt="Cured Indonesian Grade A vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
         <motion.div {...reveal} className="origin-card"><MapPin/><small>Country of origin</small><h3>Indonesia</h3><p>Exact farm or supplier region, harvest information, and traceability scope are confirmed against the selected lot and commercial agreement.</p><div><span>Species <b>Vanilla planifolia</b></span><span>Availability <b>Confirmed per lot</b></span></div></motion.div>
       </div>
     </section>
@@ -82,9 +82,9 @@ export function VanillaExportPage() {
     <section className="vanilla-gallery vanilla-section shell">
       <motion.div {...reveal} className="section-label">03 / Product gallery</motion.div>
       <div className="vanilla-gallery-grid">
-        <motion.div {...reveal} className="gallery-large"><Image src="/vanilla-grade-a.png" alt="Whole premium Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
-        <motion.div {...reveal}><Image src="/vanilla-grade-b.png" alt="Extraction-grade Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
-        <motion.div {...reveal} className="gallery-detail"><Image src="/vanilla-cuts.png" alt="Indonesian vanilla cuts for extraction" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
+        <motion.div {...reveal} className="gallery-large"><Image src="/vanilla-grade-a.webp" alt="Whole premium Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
+        <motion.div {...reveal}><Image src="/vanilla-grade-b.webp" alt="Extraction-grade Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
+        <motion.div {...reveal} className="gallery-detail"><Image src="/vanilla-cuts.webp" alt="Indonesian vanilla cuts for extraction" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
       </div>
     </section>
 
@@ -102,7 +102,7 @@ export function VanillaExportPage() {
     </section>
 
     <section className="packaging vanilla-section">
-      <div className="shell packaging-grid"><motion.div {...reveal}><div className="section-label light">06 / Export packaging</div><h2>Protected for the<br /><em>journey ahead.</em></h2><p>Vacuum sealing helps preserve bean moisture and aroma. Inner packs are placed in food-grade export cartons with buyer-specific labels and shipping marks.</p><div className="packaging-options"><span>1 kg vacuum pack</span><span>5 kg vacuum pack</span><span>10 kg bulk carton</span><span>Custom buyer specification</span></div></motion.div><motion.div {...reveal} className="packaging-image"><Image src="/hero-vanilla.png" alt="Premium vanilla beans export packaging" fill sizes="(max-width: 800px) 100vw, 50vw" /></motion.div></div>
+      <div className="shell packaging-grid"><motion.div {...reveal}><div className="section-label light">06 / Export packaging</div><h2>Protected for the<br /><em>journey ahead.</em></h2><p>Vacuum sealing helps preserve bean moisture and aroma. Inner packs are placed in food-grade export cartons with buyer-specific labels and shipping marks.</p><div className="packaging-options"><span>1 kg vacuum pack</span><span>5 kg vacuum pack</span><span>10 kg bulk carton</span><span>Custom buyer specification</span></div></motion.div><motion.div {...reveal} className="packaging-image"><Image src="/hero-vanilla.webp" alt="Premium vanilla beans export packaging" fill sizes="(max-width: 800px) 100vw, 50vw" /></motion.div></div>
     </section>
 
     <section className="quotation vanilla-section" id="quotation">
