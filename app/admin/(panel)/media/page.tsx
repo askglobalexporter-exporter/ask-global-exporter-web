@@ -5,5 +5,64 @@ import { MediaUploader } from "@/components/admin/MediaUploader";
 import { requireAdmin } from "@/lib/admin/auth";
 
 export const metadata = { title: "Media Library" };
-type Asset = { id:string;filename:string;storage_path:string;public_url:string;mime_type:string;size_bytes:number;width:number|null;height:number|null;alt_text:string;created_at:string };
-export default async function MediaPage() { const { supabase } = await requireAdmin("media.read"); const [{ data:folders },{ data:assets }] = await Promise.all([supabase.from("media_folders").select("id,name").order("name"),supabase.from("media_assets").select("*").order("created_at",{ascending:false}).limit(100)]); return <><div className="admin-page-head"><div><h1>Media Library</h1><p>Centralized export imagery with automatic compression, WebP conversion, and folder organization.</p></div><form action={createMediaFolderAction} className="admin-inline-form"><input name="name" placeholder="New folder" required style={{height:39,border:"1px solid #dce1df",borderRadius:7,padding:"0 10px"}} /><button style={{height:39}}><FolderPlus size={14} /> Create folder</button></form></div><article className="admin-card"><MediaUploader folders={folders ?? []} /></article>{assets?.length ? <div className="admin-media-grid">{(assets as Asset[]).map((asset) => <article className="admin-media-card" key={asset.id}><div className="admin-media-image">{asset.mime_type.startsWith("image/") ? <Image src={asset.public_url} alt={asset.alt_text || asset.filename} fill sizes="(max-width: 560px) 50vw, 25vw" /> : <div className="admin-empty"><ImageIcon /></div>}</div><div className="admin-media-info"><b title={asset.filename}>{asset.filename}</b><small>{Math.round(asset.size_bytes/1024)} KB{asset.width ? ` · ${asset.width}×${asset.height}` : ""}</small><form action={deleteMediaAssetAction}><input type="hidden" name="id" value={asset.id} /><input type="hidden" name="storage_path" value={asset.storage_path} /><button><Trash2 size={11} /> Delete</button></form></div></article>)}</div> : <div className="admin-card admin-empty" style={{marginTop:18}}><ImageIcon /><h3>Your media library is empty</h3><p>Upload product and company imagery to get started.</p></div>}</>; }
+
+type Asset = {
+  id: string;
+  filename: string;
+  storage_path: string;
+  public_url: string;
+  mime_type: string;
+  size_bytes: number;
+  width: number | null;
+  height: number | null;
+  alt_text: string;
+  created_at: string;
+  provider: string;
+  provider_file_id: string | null;
+};
+
+export default async function MediaPage() {
+  const { supabase } = await requireAdmin("media.read");
+  const [{ data: folders }, { data: assets }] = await Promise.all([
+    supabase.from("media_folders").select("id,name").order("name"),
+    supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(100),
+  ]);
+
+  return <>
+    <div className="admin-page-head">
+      <div>
+        <h1>Media Library</h1>
+        <p>Centralized ImageKit assets with automatic compression, WebP conversion, and folder organization.</p>
+      </div>
+      <form action={createMediaFolderAction} className="admin-inline-form">
+        <input name="name" placeholder="New folder" required style={{ height: 39, border: "1px solid #dce1df", borderRadius: 7, padding: "0 10px" }} />
+        <button style={{ height: 39 }}><FolderPlus size={14} /> Create folder</button>
+      </form>
+    </div>
+    <article className="admin-card"><MediaUploader folders={folders ?? []} /></article>
+    {assets?.length ? <div className="admin-media-grid">
+      {(assets as Asset[]).map((asset) => <article className="admin-media-card" key={asset.id}>
+        <div className="admin-media-image">
+          {asset.mime_type.startsWith("image/")
+            ? <Image src={asset.public_url} alt={asset.alt_text || asset.filename} fill sizes="(max-width: 560px) 50vw, 25vw" />
+            : <div className="admin-empty"><ImageIcon /></div>}
+        </div>
+        <div className="admin-media-info">
+          <b title={asset.filename}>{asset.filename}</b>
+          <small>{Math.round(asset.size_bytes / 1024)} KB{asset.width ? ` · ${asset.width}×${asset.height}` : ""}</small>
+          <form action={deleteMediaAssetAction}>
+            <input type="hidden" name="id" value={asset.id} />
+            <input type="hidden" name="storage_path" value={asset.storage_path} />
+            <input type="hidden" name="provider" value={asset.provider} />
+            <input type="hidden" name="provider_file_id" value={asset.provider_file_id ?? ""} />
+            <button><Trash2 size={11} /> Delete</button>
+          </form>
+        </div>
+      </article>)}
+    </div> : <div className="admin-card admin-empty" style={{ marginTop: 18 }}>
+      <ImageIcon />
+      <h3>Your media library is empty</h3>
+      <p>Upload product and company imagery to ImageKit to get started.</p>
+    </div>}
+  </>;
+}

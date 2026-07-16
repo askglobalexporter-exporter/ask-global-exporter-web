@@ -197,6 +197,7 @@ export async function createMediaFolderAction(formData: FormData) {
 export async function registerMediaAssetAction(payload: {
   folder_id: string | null; filename: string; storage_path: string; public_url: string;
   mime_type: string; size_bytes: number; width?: number; height?: number; alt_text?: string;
+  provider: "imagekit"; provider_file_id: string;
 }) {
   const { user, supabase } = await requireAdmin("media.write");
   const { error } = await supabase.from("media_assets").insert({ ...payload, uploaded_by: user.id });
@@ -209,10 +210,22 @@ export async function deleteMediaAssetAction(formData: FormData) {
   const { supabase } = await requireAdmin("media.write");
   const id = text(formData, "id");
   const storagePath = text(formData, "storage_path");
-  await supabase.storage.from("media").remove([storagePath]);
+  const provider = text(formData, "provider");
+  const providerFileId = text(formData, "provider_file_id");
+  if (provider === "imagekit" && providerFileId) {
+    const privateKey = process.env.IMAGEKIT_PRIVATE_KEY;
+    if (!privateKey) throw new Error("ImageKit private key is not configured.");
+    const response = await fetch(`https://api.imagekit.io/v1/files/${encodeURIComponent(providerFileId)}`, {
+      method: "DELETE",
+      headers: { Authorization: `Basic ${Buffer.from(`${privateKey}:`).toString("base64")}` },
+    });
+    if (!response.ok && response.status !== 404) throw new Error("The asset could not be deleted from ImageKit.");
+  } else {
+    await supabase.storage.from("media").remove([storagePath]);
+  }
   const { error } = await supabase.from("media_assets").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  await writeAudit("media.deleted", "media", id, { storagePath });
+  await writeAudit("media.deleted", "media", id, { storagePath, provider });
   revalidatePath("/admin/media");
 }
 

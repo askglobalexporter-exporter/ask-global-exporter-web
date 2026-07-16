@@ -7,7 +7,7 @@
 - CMS collections for homepage, about, FAQ, testimonials, blog, export documents, and company profile.
 - Product catalogue CRUD, draft/publish, featured products, specifications, packaging, grades, MOQ, lead time, and Incoterms.
 - RFQ and sample-request CRM with status workflows and CSV export.
-- Media Library with folders, browser-side compression, WebP conversion, and Supabase Storage.
+- Media Library with folders, browser-side compression, WebP conversion, and ImageKit storage.
 - Per-route SEO settings and a reorderable, hide/show Homepage Builder.
 - Dashboard activity, visitor events, inquiry totals, and published-product totals.
 - Team invitations, role changes, audit events, and RLS policies.
@@ -31,6 +31,9 @@ where user_id = (
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` or the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SECRET_KEY` or the legacy `SUPABASE_SERVICE_ROLE_KEY`
+- `IMAGEKIT_PUBLIC_KEY`
+- `IMAGEKIT_PRIVATE_KEY` (server-only)
+- `IMAGEKIT_URL_ENDPOINT`
 
 5. Add the production URL to Supabase Auth URL Configuration. The admin sign-in route is `/admin/login`.
 
@@ -47,4 +50,4 @@ where user_id = (
 | SEO | Full | Full | Full |
 | Team and roles | Full | No access | No access |
 
-The service/secret key is server-only and must never use a `NEXT_PUBLIC_` prefix.
+The Supabase and ImageKit private keys are server-only and must never use a `NEXT_PUBLIC_` prefix.
