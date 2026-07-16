@@ -8,7 +8,7 @@ import { BrandLogo } from "./BrandLogo";
 const links = [
   ["About", "/#about"],
   ["Products", "/#products"],
-  ["Why Alya", "/#why-us"],
+  ["Our Focus", "/#why-us"],
   ["Process", "/#process"],
   ["Contact", "/#contact"],
 ];
@@ -17,7 +17,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <header className="site-header">
-      <Link href="/" className="brand" aria-label="Alya Global Trade home">
+      <Link href="/" className="brand" aria-label="Ask Global home">
         <BrandLogo />
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">

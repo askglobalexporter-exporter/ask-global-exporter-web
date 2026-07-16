@@ -38,7 +38,8 @@ export function HomePage() {
         <div className="intro-grid">
           <motion.h2 {...reveal}>From the heart of Indonesia,<br /><em>to businesses worldwide.</em></motion.h2>
           <motion.div {...reveal} className="intro-copy">
-            <p>ALYA Global Trade connects international buyers with Indonesian vanilla bean products. We coordinate specification-led sourcing, lot confirmation, export packaging, and shipping support.</p>
+            <p>ASK Global is an Indonesian trading company connecting global buyers with premium Indonesian commodities.</p>
+            <p>We serve manufacturers, flavor houses, extract producers, food ingredient companies, distributors, and importers seeking dependable sourcing partners from Indonesia.</p>
             <a href="#why-us" className="text-link">Discover our standards <ArrowRight size={15} /></a>
           </motion.div>
         </div>
@@ -46,8 +47,9 @@ export function HomePage() {
           <div className="promise-image" />
           <div className="promise-copy">
             <div className="eyebrow"><span /> Our promise</div>
-            <h3>Vanilla, sourced with clarity.</h3>
-            <p>Every partnership starts with transparency. Vanilla grade, moisture, length, packaging, and commercial terms are confirmed against the selected lot and buyer requirements.</p>
+            <h3>Long-term partnerships, earned.</h3>
+            <p>We are built on a simple principle: long-term partnerships are earned through consistency, transparency, and reliable execution&mdash;not one-off transactions.</p>
+            <p>We work closely with trusted farmers, processors, and local suppliers across Indonesia to ensure consistent quality, reliable supply, and products that meet international market expectations.</p>
             <div className="mini-values">
               <span><Check /> Traceable sourcing</span><span><Check /> Consistent quality</span><span><Check /> Clear communication</span>
             </div>
@@ -82,19 +84,19 @@ export function HomePage() {
       </section>
 
       <section className="why section shell" id="why-us">
-        <motion.div {...reveal} className="section-label">03 / Why Alya</motion.div>
+        <motion.div {...reveal} className="section-label">03 / Our focus</motion.div>
         <motion.div {...reveal} className="section-heading">
-          <h2>A stronger link in your<br /><em>global supply chain.</em></h2>
-          <p>We bring local access and international discipline together—so buying from Indonesia feels clear, reliable, and effortless.</p>
+          <h2>Indonesian supply,<br /><em>built for global business.</em></h2>
+          <p>Our sourcing network and trading capabilities support buyers across six core areas.</p>
         </motion.div>
         <div className="feature-grid">
           {[
-            [ShieldCheck, "Quality assurance", "Clear specifications, supplier verification, and pre-shipment inspection."],
-            [PackageCheck, "Reliable supply", "A carefully managed producer network built around continuity and consistency."],
-            [Globe2, "International standards", "Export documentation and packaging aligned with destination requirements."],
-            [Ship, "Global logistics", "Coordinated air and sea freight with transparent milestone updates."],
-            [Sparkles, "Tailored sourcing", "Products, grades, packaging, and volumes matched to your exact brief."],
-            [Mail, "Fast response", "Direct, professional communication from inquiry through delivery."],
+            [ShieldCheck, "Agricultural Commodities", "Specification-led sourcing from trusted Indonesian producers and suppliers."],
+            [PackageCheck, "Plantation Products", "Reliable access to plantation-grown products for international B2B requirements."],
+            [Sparkles, "Spices", "Indonesian spices sourced for manufacturers, distributors, and ingredient buyers."],
+            [Globe2, "Natural Ingredients", "Natural Indonesian ingredients aligned with buyer applications and quality expectations."],
+            [Mail, "Private Label", "Flexible product, packaging, and labeling coordination for qualified buyer programs."],
+            [Ship, "Global Trading", "Transparent commercial coordination, export documentation, and international logistics."],
           ].map(([Icon, title, copy], i) => (
             <motion.div {...reveal} className="feature" key={title as string}>
               <span className="feature-no">0{i + 1}</span><Icon size={26} strokeWidth={1.3} />
@@ -131,15 +133,15 @@ export function HomePage() {
         <div className="shell contact-grid">
           <motion.div {...reveal}>
             <div className="section-label light">06 / Start a conversation</div>
-            <h2>Ready to source<br /><em>Indonesian vanilla?</em></h2>
-            <p>Share your grade, quantity, application, packaging, and destination. Our export team will respond with availability and the next sourcing steps.</p>
+            <h2>Ready to source<br /><em>from Indonesia?</em></h2>
+            <p>Share your product, specification, quantity, packaging, and destination. Our team will respond with availability and the next sourcing steps.</p>
           </motion.div>
           <motion.div {...reveal} className="contact-card">
-            <a className="contact-row" href="https://wa.me/6287810119696?text=Hello%20ALYA%20Global%20Trade%2C%0A%0AI%20am%20interested%20in%20your%20products.%20Please%20provide%20a%20quotation%20and%20additional%20information.%0A%0AThank%20you." target="_blank" rel="noreferrer">
-              <span className="contact-icon">WA</span><span><small>WhatsApp</small><b>+62 878-1011-9696</b></span><ArrowRight />
+            <a className="contact-row" href="https://wa.me/6285196598995?text=Hello%20Ask%20Global%2C%0A%0AI%20am%20interested%20in%20your%20products.%20Please%20provide%20a%20quotation%20and%20additional%20information.%0A%0AThank%20you." target="_blank" rel="noreferrer">
+              <span className="contact-icon">WA</span><span><small>WhatsApp</small><b>+62 851-9659-8995</b></span><ArrowRight />
             </a>
-            <a className="contact-row" href="mailto:hello@alyaglobaltrade.com?subject=Product%20Inquiry%20-%20ALYA%20Global%20Trade">
-              <span className="contact-icon"><Mail /></span><span><small>Email</small><b>hello@alyaglobaltrade.com</b></span><ArrowRight />
+            <a className="contact-row" href="mailto:askglobalexporter@gmail.com?subject=Product%20Inquiry%20-%20Ask%20Global">
+              <span className="contact-icon"><Mail /></span><span><small>Email</small><b>askglobalexporter@gmail.com</b></span><ArrowRight />
             </a>
             <div className="contact-row">
               <span className="contact-icon"><MapPin /></span><span><small>Office</small><b>Jakarta, Indonesia</b></span>
@@ -151,12 +153,12 @@ export function HomePage() {
 
       <footer>
         <div className="shell footer-top">
-          <div><div className="brand footer-brand"><BrandLogo /></div><p>Connecting international buyers with Indonesian vanilla through specification-led sourcing and responsible trade.</p></div>
+          <div><div className="brand footer-brand"><BrandLogo /></div><p>Connecting global buyers with premium Indonesian commodities through consistent, transparent, and reliable trade.</p></div>
           <div><small>Explore</small><a href="#about">About</a><a href="#products">Products</a><a href="#process">How it works</a></div>
-          <div><small>Connect</small><a href="#contact">Contact</a><a href="mailto:hello@alyaglobaltrade.com">Email</a><a href="https://wa.me/6287810119696">WhatsApp</a></div>
+          <div><small>Connect</small><a href="#contact">Contact</a><a href="mailto:askglobalexporter@gmail.com">Email</a><a href="https://wa.me/6285196598995">WhatsApp</a></div>
           <div><small>Head office</small><p>Jakarta, Indonesia<br />Serving buyers worldwide</p></div>
         </div>
-        <div className="shell footer-bottom"><span>© {new Date().getFullYear()} ALYA Global Trade</span><span>Indonesian vanilla · Global sourcing</span></div>
+        <div className="shell footer-bottom"><span>© {new Date().getFullYear()} Ask Global</span><span>Indonesian commodities · Global trading</span></div>
       </footer>
     </main>
   );

@@ -1,4 +1,4 @@
-# ALYA Vanilla B2B Upgrade
+# Ask Global Vanilla B2B Upgrade
 
 ## Public routes
 
@@ -15,7 +15,7 @@
 
 ## Reusable components and content
 
-- `BrandLogo` — responsive ALYA wordmark using the existing brand colors and typography.
+- `BrandLogo` — responsive Ask Global wordmark using the existing brand colors and typography.
 - `SpecificationTable` — reusable desktop/mobile technical specification view.
 - `ProductDetail` — reusable B2B product-detail experience driven by typed product data.
 - `QuotationForm` and `SampleRequestForm` — React Hook Form + Zod buyer forms.

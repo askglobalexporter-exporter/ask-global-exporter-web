@@ -6,16 +6,16 @@ const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"], displa
 const cormorant = Cormorant_Garamond({ variable: "--font-display", subsets: ["latin"], weight: ["500", "600"], display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://alya-global-trade.vercel.app"),
-  title: { default: "ALYA Global Trade — Premium Indonesian Products", template: "%s | ALYA Global Trade" },
-  description: "Trusted export partner for premium Indonesian products, international sourcing, quality assurance, and global shipping.",
-  keywords: ["Export Company", "Indonesian Products", "International Trade", "Global Supplier", "Wholesale Products"],
-  openGraph: { title: "ALYA Global Trade", description: "Premium Indonesian Products For Global Markets", type: "website", locale: "en_US", images: [{ url: "/og.png", width: 1200, height: 630, alt: "ALYA Global Trade — Premium Indonesian Products For Global Markets" }] },
-  twitter: { card: "summary_large_image", title: "ALYA Global Trade", description: "Premium Indonesian Products For Global Markets", images: ["/og.png"] },
+  metadataBase: new URL("https://ask-global-exporter-web.vercel.app"),
+  title: { default: "Ask Global — Premium Indonesian Commodities", template: "%s | Ask Global" },
+  description: "Ask Global connects global buyers with premium Indonesian agricultural commodities, plantation products, spices, natural ingredients, and private-label supply.",
+  keywords: ["Indonesian Trading Company", "Agricultural Commodities", "Plantation Products", "Indonesian Spices", "Natural Ingredients", "Private Label", "Global Trading"],
+  openGraph: { title: "Ask Global", description: "Premium Indonesian Commodities for Global Buyers", type: "website", locale: "en_US", images: [{ url: "/hero-vanilla.png", width: 1536, height: 1024, alt: "Ask Global — Premium Indonesian Commodities" }] },
+  twitter: { card: "summary_large_image", title: "Ask Global", description: "Premium Indonesian Commodities for Global Buyers", images: ["/hero-vanilla.png"] },
   icons: { icon: "/favicon.svg" },
 };
 
-const schema = { "@context": "https://schema.org", "@type": "Organization", name: "ALYA Global Trade", url: "https://alya-global-trade.vercel.app", description: "Indonesian vanilla bean exporter and international supplier", email: "hello@alyaglobaltrade.com", telephone: "+62-878-1011-9696", areaServed: "Worldwide", address: { "@type": "PostalAddress", addressLocality: "Jakarta", addressCountry: "ID" } };
+const schema = { "@context": "https://schema.org", "@type": "Organization", name: "Ask Global", url: "https://ask-global-exporter-web.vercel.app", description: "Indonesian trading company connecting global buyers with premium Indonesian commodities", email: "askglobalexporter@gmail.com", telephone: "+62-851-9659-8995", areaServed: "Worldwide", address: { "@type": "PostalAddress", addressLocality: "Jakarta", addressCountry: "ID" } };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" className={`${manrope.variable} ${cormorant.variable}`}><body>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema)}} /></body></html>;

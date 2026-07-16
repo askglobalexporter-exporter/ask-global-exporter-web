@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     if (isRateLimited(`sample:${ip}`)) return NextResponse.json({ error: "Please wait before submitting another request." }, { status: 429 });
     const parsed = sampleSchema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Please check the form." }, { status: 400 });
-    if (parsed.data.website) return NextResponse.json({ ok: true, reference: "ALYA-RECEIVED" });
+    if (parsed.data.website) return NextResponse.json({ ok: true, reference: "ASK-RECEIVED" });
     const supabase = getSupabaseAdmin();
     if (!supabase) return NextResponse.json({ error: "Sample requests are being configured. Please use WhatsApp for immediate assistance." }, { status: 503 });
     const reference = inquiryReference("SMP"); const data = parsed.data;

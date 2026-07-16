@@ -42,14 +42,14 @@ const faqs = [
 ];
 
 export function VanillaExportPage() {
-  const whatsapp = "https://wa.me/6287810119696?text=" + encodeURIComponent("Hello ALYA Global Trade, I am interested in Indonesian vanilla beans. Please send your export price list and available grades.");
+  const whatsapp = "https://wa.me/6285196598995?text=" + encodeURIComponent("Hello Ask Global, I am interested in Indonesian vanilla beans. Please send your export price list and available grades.");
   return <main className="vanilla-page">
     <div className="vanilla-nav"><Header /></div>
     <section className="vanilla-product-hero">
       <Image src="/hero-vanilla.png" alt="Premium Indonesian vanilla beans for export" fill priority sizes="100vw" />
       <div className="vanilla-hero-overlay" />
       <div className="shell vanilla-hero-copy">
-        <Link href="/" className="back-link"><ArrowLeft size={15} /> Alya Global Trade</Link>
+        <Link href="/" className="back-link"><ArrowLeft size={15} /> Ask Global</Link>
         <div className="eyebrow"><span /> Direct Indonesian exporter</div>
         <h1>Indonesian<br /><em>Vanilla Beans.</em></h1>
         <p>Export-ready Planifolia vanilla, carefully cured and graded for importers, distributors, manufacturers, and premium food brands.</p>
@@ -115,6 +115,6 @@ export function VanillaExportPage() {
     </section>
 
     <section className="vanilla-final-cta"><div className="shell"><motion.div {...reveal}><small>Start your sourcing conversation</small><h2>Premium vanilla.<br /><em>Reliable export.</em></h2><div><a href="#quotation" className="btn btn-gold">Request quotation <ArrowRight/></a><a href={whatsapp} target="_blank" rel="noreferrer" className="btn btn-glass">Request sample</a></div></motion.div></div></section>
-    <footer className="vanilla-footer"><div className="shell"><span>© {new Date().getFullYear()} ALYA Global Trade</span><span>Indonesian Vanilla Beans · Global Supply</span></div></footer>
+    <footer className="vanilla-footer"><div className="shell"><span>© {new Date().getFullYear()} Ask Global</span><span>Indonesian Vanilla Beans · Global Supply</span></div></footer>
   </main>;
 }

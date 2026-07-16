@@ -8,7 +8,7 @@ export function isRateLimited(ip: string) {
 }
 export function inquiryReference(prefix: "RFQ" | "SMP") {
   const date = new Date().toISOString().slice(0,10).replaceAll("-", "");
-  return `ALYA-${prefix}-${date}-${crypto.randomUUID().slice(0,6).toUpperCase()}`;
+  return `ASK-${prefix}-${date}-${crypto.randomUUID().slice(0,6).toUpperCase()}`;
 }
 export function getSupabaseAdmin() {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;

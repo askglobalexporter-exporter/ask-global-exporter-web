@@ -36,7 +36,7 @@ export function QuotationForm({ product, grade, sourcePage = "/products/vanilla-
       <label><span>Preferred Incoterm *</span><select {...register("incoterm")}><option value="">Select term</option>{["EXW","FOB","CFR","CIF","DAP"].map(x=><option key={x}>{x}</option>)}</select>{fieldError("incoterm")}</label>
       <label className="full-field"><span>Sample Required *</span><select {...register("sampleRequired")}><option value="no">No, quotation only</option><option value="yes">Yes, subject to approval</option></select></label>
       <label className="full-field"><span>Additional Requirements</span><textarea {...register("notes")} rows={5} placeholder="Target specification, intended application, delivery schedule, or documentation needs" /></label>
-      <label className="consent-field full-field"><input type="checkbox" {...register("consent")} /><span>I consent to ALYA Global Trade using these details to respond to my inquiry. *</span>{fieldError("consent")}</label>
+      <label className="consent-field full-field"><input type="checkbox" {...register("consent")} /><span>I consent to Ask Global using these details to respond to my inquiry. *</span>{fieldError("consent")}</label>
       <label className="quote-honeypot" aria-hidden="true"><span>Website</span><input {...register("website")} tabIndex={-1} autoComplete="off" /></label>
       <input type="hidden" {...register("sourcePage")} />
     </div>

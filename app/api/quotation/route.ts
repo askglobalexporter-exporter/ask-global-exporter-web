@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     if (isRateLimited(`quote:${ip}`)) return NextResponse.json({ error: "Please wait before submitting another inquiry." }, { status: 429 });
     const parsed = quotationSchema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Please check the form." }, { status: 400 });
-    if (parsed.data.website) return NextResponse.json({ ok: true, reference: "ALYA-RECEIVED" });
+    if (parsed.data.website) return NextResponse.json({ ok: true, reference: "ASK-RECEIVED" });
     const supabase = getSupabaseAdmin();
     if (!supabase) return NextResponse.json({ error: "Online inquiries are being configured. Please use WhatsApp for immediate assistance." }, { status: 503 });
     const reference = inquiryReference("RFQ"); const data = parsed.data;
