@@ -51,7 +51,7 @@ export async function requestPasswordResetAction(_: PasswordState, formData: For
   const email = text(formData, "email").toLowerCase();
   if (!email) return { error: "Enter your administrator email." };
   const supabase = await createSupabaseServerClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ask-global-exporter-web.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.askglobalexport.com";
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${siteUrl}/admin/auth/callback?next=/admin/update-password` });
   if (error) return { error: "We could not send a password link. Please contact your Super Admin." };
   return { success: "Check your inbox for a secure password setup link." };
@@ -236,7 +236,7 @@ export async function inviteAdminAction(formData: FormData) {
   const role = text(formData, "role") as AdminRole;
   const admin = getSupabaseAdmin();
   if (!admin) throw new Error("Server administration key is not configured.");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ask-global-exporter-web.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.askglobalexport.com";
   const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: fullName }, redirectTo: `${siteUrl}/admin/auth/callback?next=/admin/update-password` });
   if (error) throw new Error(error.message);
   if (data.user) await admin.from("admin_profiles").upsert({ user_id: data.user.id, full_name: fullName, role, is_active: true });
