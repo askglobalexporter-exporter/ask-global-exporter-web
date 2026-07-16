@@ -6,10 +6,10 @@ import { useState } from "react";
 import { BrandLogo } from "./BrandLogo";
 
 const links = [
-  ["About", "/#about"],
+  ["About", "/about"],
   ["Products", "/#products"],
-  ["Our Focus", "/#why-us"],
   ["Process", "/#process"],
+  ["Insights", "/blog"],
   ["Contact", "/#contact"],
 ];
 

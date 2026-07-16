@@ -18,7 +18,7 @@ export type AdminPermission =
 
 const rolePermissions: Record<AdminRole, AdminPermission[]> = {
   super_admin: ["dashboard.read","analytics.read","inquiries.read","inquiries.write","content.read","content.write","products.read","products.write","homepage.write","testimonials.write","blog.write","seo.write","media.read","media.write","team.write"],
-  marketing: ["dashboard.read","analytics.read","inquiries.read","inquiries.write","testimonials.write","blog.write","seo.write","media.read","media.write"],
+  marketing: ["dashboard.read","analytics.read","inquiries.read","inquiries.write","content.read","testimonials.write","blog.write","seo.write","media.read","media.write"],
   content_editor: ["dashboard.read","content.read","content.write","products.read","products.write","homepage.write","seo.write","media.read","media.write"],
 };
 

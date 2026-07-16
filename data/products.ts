@@ -8,6 +8,7 @@ export type Product = {
   category: string;
   origin: string;
   moq: string;
+  shortDescription?: string;
   description: string;
   image: string;
   gallery: string[];
@@ -23,6 +24,9 @@ export type Product = {
   faqs: ProductFaq[];
   seoTitle: string;
   seoDescription: string;
+  isFeatured?: boolean;
+  incoterms?: string[];
+  grades?: string[];
 };
 
 const sharedFaqs: ProductFaq[] = [

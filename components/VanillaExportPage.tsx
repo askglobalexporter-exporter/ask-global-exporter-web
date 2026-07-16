@@ -6,10 +6,11 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, FileCheck2, Leaf, MapPin, PackageCheck, Ship, Sprout } from "lucide-react";
 import { Header } from "./Header";
 import { QuotationForm } from "./QuotationForm";
+import type { Product, ProductFaq } from "@/data/products";
 
 const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-70px" }, transition: { duration: .7 } };
 
-const specs = [
+const defaultSpecs = [
   ["Botanical name", "Vanilla planifolia"], ["Origin", "Indonesia — exact region confirmed per lot"],
   ["Bean length", "To be confirmed against buyer specification"], ["Moisture", "Confirmed per approved lot"],
   ["Vanillin", "Certificate of Analysis when available"], ["Appearance", "Confirmed by grade and approved sample"],
@@ -17,7 +18,7 @@ const specs = [
   ["Shelf life", "Confirmed by packaging and specification"], ["Incoterms", "EXW, FOB, CFR, CIF, DAP — subject to agreement"],
 ];
 
-const grades = [
+const defaultGrades = [
   ["Gourmet Grade A", "To be confirmed", "Confirmed per lot", "Premium culinary, pastry, hospitality"],
   ["Extraction Grade B", "To be confirmed", "Confirmed per lot", "Extract, paste, flavor manufacturing"],
   ["Vanilla Cuts", "Custom cut size", "Confirmed per lot", "Industrial processing and milling"],
@@ -32,7 +33,7 @@ const process = [
   [Ship, "International Shipping", "Documents and freight are coordinated for reliable delivery to your destination."],
 ];
 
-const faqs = [
+const defaultFaqs: Array<[string,string]> = [
   ["Can I request samples before a bulk order?", "Yes. Qualified buyers can request representative grade samples. Sample and courier costs are confirmed based on destination."],
   ["Which vanilla grades are available?", "We supply Gourmet Grade A, Extraction Grade B, and cut or split beans. Custom sorting by length and moisture can be discussed."],
   ["What is the minimum order quantity?", "MOQ is available upon request and depends on grade, packaging, lot availability, and destination."],
@@ -41,7 +42,13 @@ const faqs = [
   ["How long does an order take?", "Lead time is confirmed with the quotation and depends on lot availability, volume, packaging, and documentation."],
 ];
 
-export function VanillaExportPage() {
+export function VanillaExportPage({ catalog = [], faqItems = [], documentNames = [] }: { catalog?:Product[];faqItems?:ProductFaq[];documentNames?:string[] }) {
+  const primary = catalog.find((product)=>product.slug === "grade-a-vanilla-beans") ?? catalog[0];
+  const specs = primary?.specifications.length ? primary.specifications.map((item)=>[item.label,item.value]) : defaultSpecs;
+  const grades = catalog.length ? catalog.slice(0,4).map((product)=>[product.name,product.typicalLength,product.moisture,product.application]) : defaultGrades;
+  const faqs = faqItems.length ? faqItems.map((item)=>[item.question,item.answer]) : defaultFaqs;
+  const documents = documentNames.length ? documentNames : ["Certificate of Origin","Phytosanitary Certificate","Commercial Invoice","Packing List","Fumigation Certificate"];
+  const gallery = catalog.length ? catalog.slice(0,3).map((product)=>({src:product.image,alt:product.name})) : [{src:"/vanilla-grade-a.webp",alt:"Whole premium Indonesian vanilla beans"},{src:"/vanilla-grade-b.webp",alt:"Extraction-grade Indonesian vanilla beans"},{src:"/vanilla-cuts.webp",alt:"Indonesian vanilla cuts for extraction"}];
   const whatsapp = "https://wa.me/6285196598995?text=" + encodeURIComponent("Hello Ask Global, I am interested in Indonesian vanilla beans. Please send your export price list and available grades.");
   return <main className="vanilla-page">
     <div className="vanilla-nav"><Header /></div>
@@ -65,7 +72,7 @@ export function VanillaExportPage() {
         <motion.div {...reveal}><p>Our Indonesian Vanilla planifolia is sourced through selected vanilla-specific suppliers, then cured and sorted against buyer requirements. Exact origin, grade, moisture, and commercial specifications are confirmed per approved lot.</p><p>We support importers, ingredient distributors, extract manufacturers, bakeries, hospitality groups, and private-label brands.</p></motion.div>
       </div>
       <div className="vanilla-origin-grid">
-        <motion.div {...reveal} className="origin-image"><Image src="/vanilla-grade-a.webp" alt="Cured Indonesian Grade A vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
+        <motion.div {...reveal} className="origin-image"><Image src={primary?.image || "/vanilla-grade-a.webp"} alt={primary?.name || "Cured Indonesian Grade A vanilla beans"} fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
         <motion.div {...reveal} className="origin-card"><MapPin/><small>Country of origin</small><h3>Indonesia</h3><p>Exact farm or supplier region, harvest information, and traceability scope are confirmed against the selected lot and commercial agreement.</p><div><span>Species <b>Vanilla planifolia</b></span><span>Availability <b>Confirmed per lot</b></span></div></motion.div>
       </div>
     </section>
@@ -82,9 +89,7 @@ export function VanillaExportPage() {
     <section className="vanilla-gallery vanilla-section shell">
       <motion.div {...reveal} className="section-label">03 / Product gallery</motion.div>
       <div className="vanilla-gallery-grid">
-        <motion.div {...reveal} className="gallery-large"><Image src="/vanilla-grade-a.webp" alt="Whole premium Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 60vw" /></motion.div>
-        <motion.div {...reveal}><Image src="/vanilla-grade-b.webp" alt="Extraction-grade Indonesian vanilla beans" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
-        <motion.div {...reveal} className="gallery-detail"><Image src="/vanilla-cuts.webp" alt="Indonesian vanilla cuts for extraction" fill sizes="(max-width: 800px) 100vw, 40vw" /></motion.div>
+        {gallery.map((image,index)=><motion.div {...reveal} key={image.src} className={index===0?"gallery-large":index===2?"gallery-detail":""}><Image src={image.src} alt={image.alt} fill sizes={index===0?"(max-width: 800px) 100vw, 60vw":"(max-width: 800px) 100vw, 40vw"} /></motion.div>)}
       </div>
     </section>
 
@@ -98,11 +103,11 @@ export function VanillaExportPage() {
 
     <section className="compliance vanilla-section shell">
       <motion.div {...reveal} className="section-label">05 / Export compliance</motion.div>
-      <div className="compliance-grid"><motion.div {...reveal}><h2>Documentation for<br /><em>smoother clearance.</em></h2><p>Document availability depends on the destination, shipment, and buyer requirements. Our team confirms the required set before order finalization.</p></motion.div><div className="document-list">{["Certificate of Origin","Phytosanitary Certificate","Commercial Invoice","Packing List","Fumigation Certificate"].map((x,i)=><motion.div {...reveal} key={x}><FileCheck2/><span><small>Document 0{i+1}</small><b>{x}</b></span><Check/></motion.div>)}</div></div>
+      <div className="compliance-grid"><motion.div {...reveal}><h2>Documentation for<br /><em>smoother clearance.</em></h2><p>Document availability depends on the destination, shipment, and buyer requirements. Our team confirms the required set before order finalization.</p></motion.div><div className="document-list">{documents.map((x,i)=><motion.div {...reveal} key={x}><FileCheck2/><span><small>Document 0{i+1}</small><b>{x}</b></span><Check/></motion.div>)}</div></div>
     </section>
 
     <section className="packaging vanilla-section">
-      <div className="shell packaging-grid"><motion.div {...reveal}><div className="section-label light">06 / Export packaging</div><h2>Protected for the<br /><em>journey ahead.</em></h2><p>Vacuum sealing helps preserve bean moisture and aroma. Inner packs are placed in food-grade export cartons with buyer-specific labels and shipping marks.</p><div className="packaging-options"><span>1 kg vacuum pack</span><span>5 kg vacuum pack</span><span>10 kg bulk carton</span><span>Custom buyer specification</span></div></motion.div><motion.div {...reveal} className="packaging-image"><Image src="/hero-vanilla.webp" alt="Premium vanilla beans export packaging" fill sizes="(max-width: 800px) 100vw, 50vw" /></motion.div></div>
+      <div className="shell packaging-grid"><motion.div {...reveal}><div className="section-label light">06 / Export packaging</div><h2>Protected for the<br /><em>journey ahead.</em></h2><p>Vacuum sealing helps preserve bean moisture and aroma. Inner packs are placed in food-grade export cartons with buyer-specific labels and shipping marks.</p><div className="packaging-options">{(primary?.packaging.length ? primary.packaging : ["1 kg vacuum pack","5 kg vacuum pack","10 kg bulk carton","Custom buyer specification"]).map((option)=><span key={option}>{option}</span>)}</div></motion.div><motion.div {...reveal} className="packaging-image"><Image src={primary?.gallery[1] || "/hero-vanilla.webp"} alt="Premium vanilla beans export packaging" fill sizes="(max-width: 800px) 100vw, 50vw" /></motion.div></div>
     </section>
 
     <section className="quotation vanilla-section" id="quotation">

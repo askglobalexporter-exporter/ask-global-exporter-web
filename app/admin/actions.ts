@@ -88,8 +88,20 @@ export async function saveProductAction(formData: FormData) {
     : supabase.from("products").insert({ ...payload, created_by: user.id }).select("id").single();
   const { data, error } = await query;
   if (error) throw new Error(error.message);
+  const galleryImages = list(text(formData, "gallery_images"));
+  const { error: deleteImagesError } = await supabase.from("product_images").delete().eq("product_id", data.id);
+  if (deleteImagesError) throw new Error(deleteImagesError.message);
+  if (galleryImages.length) {
+    const { error: galleryError } = await supabase.from("product_images").insert(galleryImages.map((imageUrl, position) => ({
+      product_id: data.id,
+      image_url: imageUrl,
+      alt_text: `${name} product image ${position + 1}`,
+      position,
+    })));
+    if (galleryError) throw new Error(galleryError.message);
+  }
   await writeAudit(id ? "product.updated" : "product.created", "product", data.id, { name });
-  revalidatePath("/admin/products"); revalidatePath("/");
+  revalidatePath("/admin/products"); revalidatePath("/"); revalidatePath(`/products/${payload.slug}`); revalidatePath("/products/vanilla-beans");
 }
 
 export async function deleteProductAction(formData: FormData) {
@@ -98,7 +110,7 @@ export async function deleteProductAction(formData: FormData) {
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) throw new Error(error.message);
   await writeAudit("product.deleted", "product", id);
-  revalidatePath("/admin/products"); revalidatePath("/");
+  revalidatePath("/admin/products"); revalidatePath("/"); revalidatePath("/products/vanilla-beans");
 }
 
 export async function saveCmsEntryAction(formData: FormData) {
@@ -128,16 +140,20 @@ export async function saveCmsEntryAction(formData: FormData) {
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   await writeAudit(id ? "content.updated" : "content.created", collection, data.id, { title });
-  revalidatePath("/admin/content"); revalidatePath("/");
+  revalidatePath("/admin/content"); revalidatePath("/"); revalidatePath("/about"); revalidatePath("/blog"); revalidatePath("/products/vanilla-beans");
 }
 
 export async function deleteCmsEntryAction(formData: FormData) {
-  const { supabase } = await requireAdmin("content.write");
+  const { profile, supabase } = await requireAdmin("content.read");
   const id = text(formData, "id");
+  const collection = text(formData, "collection");
+  const allowed = profile.role === "super_admin" || profile.role === "content_editor"
+    || (profile.role === "marketing" && ["blog", "testimonial"].includes(collection));
+  if (!allowed) throw new Error("You do not have permission to delete this entry.");
   const { error } = await supabase.from("cms_entries").delete().eq("id", id);
   if (error) throw new Error(error.message);
   await writeAudit("content.deleted", "cms_entry", id);
-  revalidatePath("/admin/content");
+  revalidatePath("/admin/content"); revalidatePath("/"); revalidatePath("/about"); revalidatePath("/blog"); revalidatePath("/products/vanilla-beans");
 }
 
 export async function saveSeoAction(formData: FormData) {
@@ -169,6 +185,25 @@ export async function saveHomepageSectionsAction(formData: FormData) {
   const error = results.find((result) => result.error)?.error;
   if (error) throw new Error(error.message);
   await writeAudit("homepage.reordered", "homepage", undefined, { count: sections.length });
+  revalidatePath("/admin/homepage"); revalidatePath("/");
+}
+
+export async function saveHomepageSectionContentAction(formData: FormData) {
+  const { user, supabase } = await requireAdmin("homepage.write");
+  const id = text(formData, "id");
+  const sectionKey = text(formData, "section_key");
+  const content = {
+    title: text(formData, "title"),
+    eyebrow: text(formData, "eyebrow"),
+    summary: text(formData, "summary"),
+    body: text(formData, "body"),
+    cta_label: text(formData, "cta_label"),
+    cta_url: text(formData, "cta_url"),
+    image_url: text(formData, "image_url"),
+  };
+  const { error } = await supabase.from("homepage_sections").update({ content, updated_by: user.id, updated_at: new Date().toISOString() }).eq("id", id);
+  if (error) throw new Error(error.message);
+  await writeAudit("homepage.content_updated", "homepage_section", id, { sectionKey });
   revalidatePath("/admin/homepage"); revalidatePath("/");
 }
 
