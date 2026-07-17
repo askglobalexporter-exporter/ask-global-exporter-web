@@ -26,6 +26,8 @@ npm run build
 - Product catalogue, specifications, gallery, status, and SEO
 - About, company profile, FAQ, testimonials, blog, and export documents
 - RFQ and sample request CRM with CSV export
+- Durable inquiry rate limiting, Cloudflare Turnstile verification, and email alerts
+- Public privacy policy linked from inquiry forms and site footers
 - ImageKit media library
 - Route-level SEO metadata
 - Role-based access for Super Admin, Marketing, and Content Editor

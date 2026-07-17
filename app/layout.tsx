@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
+import Script from "next/script";
 import { AnalyticsBeacon } from "@/components/AnalyticsBeacon";
 import { CompanySettingsProvider } from "@/components/CompanySettingsProvider";
 import { getCompanySettings, getSeoSetting } from "@/lib/public-content";
@@ -18,6 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const company = await getCompanySettings();
+  const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
   const schema = { "@context": "https://schema.org", "@type": "Organization", name: company.legal_name, url: "https://www.askglobalexport.com", description: company.description, email: company.email, telephone: company.whatsapp_display, logo: company.logo_url || undefined, areaServed: "Worldwide", address: { "@type": "PostalAddress", streetAddress: company.address, addressCountry: "ID" } };
-  return <html lang="en" className={`${manrope.variable} ${cormorant.variable}`}><body><CompanySettingsProvider settings={company}>{children}</CompanySettingsProvider><AnalyticsBeacon /><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema)}} /></body></html>;
+  return <html lang="en" className={`${manrope.variable} ${cormorant.variable}`}><body>{turnstileEnabled && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive"/>}<CompanySettingsProvider settings={company}>{children}</CompanySettingsProvider><AnalyticsBeacon /><script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema)}} /></body></html>;
 }

@@ -198,7 +198,7 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
         <div className="shell footer-top">
           <div><div className="brand footer-brand"><BrandLogo /></div><p>{company.description}</p></div>
           <div><small>Explore</small><a href="#about">About</a><a href="#products">Products</a><a href="#process">How it works</a></div>
-          <div><small>Connect</small><a href="#contact">Contact</a><a href={`mailto:${company.email}`}>Email</a><a href={`https://wa.me/${whatsappNumber}`}>WhatsApp</a></div>
+          <div><small>Connect</small><a href="#contact">Contact</a><a href={`mailto:${company.email}`}>Email</a><a href={`https://wa.me/${whatsappNumber}`}>WhatsApp</a><Link href="/privacy">Privacy Policy</Link></div>
           <div><small>Head office</small><p>{company.address}<br />{company.service_area}</p></div>
         </div>
         <div className="shell footer-bottom"><span>© {new Date().getFullYear()} {company.brand_name}</span><span>{company.tagline}</span></div>

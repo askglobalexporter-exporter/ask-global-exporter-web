@@ -122,6 +122,6 @@ export function VanillaExportPage({ catalog = [], faqItems = [], documentNames =
     </section>
 
     <section className="vanilla-final-cta"><div className="shell"><motion.div {...reveal}><small>Start your sourcing conversation</small><h2>Premium vanilla.<br /><em>Reliable export.</em></h2><div><a href="#quotation" className="btn btn-gold">Request quotation <ArrowRight/></a><a href={whatsapp} target="_blank" rel="noreferrer" className="btn btn-glass">Request sample</a></div></motion.div></div></section>
-    <footer className="vanilla-footer"><div className="shell"><span>© {new Date().getFullYear()} {company.brand_name}</span><span>{company.tagline}</span></div></footer>
+    <footer className="vanilla-footer"><div className="shell"><span>© {new Date().getFullYear()} {company.brand_name}</span><span>{company.tagline} · <Link href="/privacy">Privacy Policy</Link></span></div></footer>
   </main>;
 }

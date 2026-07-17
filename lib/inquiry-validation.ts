@@ -11,6 +11,7 @@ export const quotationSchema = z.object({
   quantity: requiredText("Quantity", 80), packaging: requiredText("Packaging", 120), destinationPort: requiredText("Destination port", 120),
   incoterm: requiredText("Incoterm", 20), sampleRequired: z.enum(["yes", "no"]), notes: optionalText(1500),
   consent: z.boolean().refine(Boolean, "Consent is required"), website: optionalText(100), sourcePage: optionalText(300),
+  turnstileToken: optionalText(2048),
 });
 
 export const sampleSchema = z.object({
@@ -19,6 +20,7 @@ export const sampleSchema = z.object({
   intendedUse: requiredText("Intended use", 300), expectedVolume: requiredText("Expected future order volume", 100),
   shippingAddress: requiredText("Shipping address", 500), courierAccount: optionalText(100), notes: optionalText(1200),
   consent: z.boolean().refine(Boolean, "Consent is required"), website: optionalText(100), sourcePage: optionalText(300),
+  turnstileToken: optionalText(2048),
 });
 
 export type QuotationInput = z.infer<typeof quotationSchema>;

@@ -34,6 +34,11 @@ where user_id = (
 - `IMAGEKIT_PUBLIC_KEY`
 - `IMAGEKIT_PRIVATE_KEY` (server-only)
 - `IMAGEKIT_URL_ENDPOINT`
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET_KEY` (server-only)
+- `RESEND_API_KEY` (server-only)
+- `INQUIRY_FROM_EMAIL` (sender on a domain verified in Resend)
+- `INQUIRY_NOTIFICATION_EMAIL` (recipient for new RFQ and sample alerts)
 
 5. Add the production URL to Supabase Auth URL Configuration. The admin sign-in route is `/admin/login`.
 
@@ -51,3 +56,12 @@ where user_id = (
 | Team and roles | Full | No access | No access |
 
 The Supabase and ImageKit private keys are server-only and must never use a `NEXT_PUBLIC_` prefix.
+
+## Inquiry protection and notifications
+
+1. Apply migration `013_inquiry_protection.sql` to enable durable per-IP-hash rate limiting.
+2. Create a Cloudflare Turnstile widget for `askglobalexport.com` and `www.askglobalexport.com`, then add both Turnstile variables to Vercel.
+3. Verify the sending domain in Resend and add the three email notification variables to Vercel.
+4. Redeploy, submit one test RFQ and one test sample request, then confirm each record appears in Admin and each notification reaches the configured inbox.
+
+Inquiry records are saved before email is attempted. A temporary email-provider failure therefore does not lose the lead.
