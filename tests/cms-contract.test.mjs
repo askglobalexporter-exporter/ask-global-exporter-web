@@ -47,8 +47,9 @@ test("admin image fields upload directly to ImageKit", async () => {
 });
 
 test("company identity is editable once and reused by the public website", async () => {
-  const [migration, content, action, companyPage, layout, home, brandLogo] = await Promise.all([
+  const [migration, mapsMigration, content, action, companyPage, layout, home, brandLogo] = await Promise.all([
     source("supabase/migrations/008_company_settings.sql"),
+    source("supabase/migrations/012_company_maps_url.sql"),
     source("lib/public-content.ts"),
     source("app/admin/actions.ts"),
     source("app/admin/(panel)/company/page.tsx"),
@@ -58,11 +59,14 @@ test("company identity is editable once and reused by the public website", async
   ]);
   assert.match(migration, /create table if not exists public\.company_settings/i);
   assert.match(migration, /for select to anon using \(true\)/i);
+  assert.match(mapsMigration, /add column if not exists maps_url/i);
   assert.match(content, /getCompanySettings/);
   assert.match(action, /saveCompanySettingsAction/);
   assert.match(companyPage, /name="whatsapp_logo_url"/);
+  assert.match(companyPage, /name="maps_url"/);
   assert.match(layout, /CompanySettingsProvider/);
   assert.match(home, /useCompanySettings/);
+  assert.match(home, /google\.com\/maps\/search/);
   assert.match(brandLogo, /company\.brand_name\.trim\(\)\.split/);
   assert.doesNotMatch(brandLogo, />ASK</);
 });

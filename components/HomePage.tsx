@@ -23,6 +23,7 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
   const company = useCompanySettings();
   const whatsappNumber = company.whatsapp_number.replace(/\D/g, "");
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello ${company.brand_name},\n\nI am interested in your products. Please provide a quotation and additional information.\n\nThank you.`)}`;
+  const mapsUrl = company.maps_url.trim() || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(company.address)}`;
   const hero = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: hero, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
@@ -185,9 +186,9 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
             <a className="contact-row" href={`mailto:${company.email}?subject=${encodeURIComponent(`Product Inquiry - ${company.brand_name}`)}`}>
               <span className="contact-icon"><Mail /></span><span><small>Email</small><b>{company.email}</b></span><ArrowRight />
             </a>
-            <div className="contact-row">
-              <span className="contact-icon"><MapPin /></span><span><small>Office</small><b>{company.address}</b></span>
-            </div>
+            <a className="contact-row" href={mapsUrl} target="_blank" rel="noreferrer" aria-label={`Open ${company.address} in Google Maps`}>
+              <span className="contact-icon"><MapPin /></span><span><small>Office</small><b>{company.address}</b></span><ArrowRight />
+            </a>
             <p className="hours">Business hours · {company.business_hours}</p>
           </motion.div>
         </div>

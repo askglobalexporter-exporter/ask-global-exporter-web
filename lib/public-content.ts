@@ -82,6 +82,7 @@ export type CompanySettings = {
   whatsapp_number: string;
   whatsapp_display: string;
   address: string;
+  maps_url: string;
   service_area: string;
   business_hours: string;
   logo_url: string | null;
@@ -97,6 +98,7 @@ export const defaultCompanySettings: CompanySettings = {
   whatsapp_number: "6285196598995",
   whatsapp_display: "+62 851-9659-8995",
   address: "Jakarta, Indonesia",
+  maps_url: "",
   service_area: "Serving buyers worldwide",
   business_hours: "Mon–Fri, 09:00–17:00 WIB",
   logo_url: null,
@@ -238,7 +240,7 @@ export async function getSeoSetting(route: string): Promise<SeoSetting | null> {
 export async function getCompanySettings(): Promise<CompanySettings> {
   const supabase = publicClient();
   if (!supabase) return defaultCompanySettings;
-  const { data, error } = await supabase.from("company_settings").select("brand_name,legal_name,tagline,description,email,whatsapp_number,whatsapp_display,address,service_area,business_hours,logo_url,whatsapp_logo_url").eq("singleton", true).maybeSingle();
+  const { data, error } = await supabase.from("company_settings").select("brand_name,legal_name,tagline,description,email,whatsapp_number,whatsapp_display,address,maps_url,service_area,business_hours,logo_url,whatsapp_logo_url").eq("singleton", true).maybeSingle();
   if (error) {
     console.error("Unable to load company settings", error.message);
     return defaultCompanySettings;

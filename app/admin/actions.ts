@@ -286,6 +286,7 @@ export async function saveCompanySettingsAction(formData: FormData) {
     whatsapp_number: whatsappNumber,
     whatsapp_display: text(formData, "whatsapp_display"),
     address: text(formData, "address"),
+    maps_url: text(formData, "maps_url"),
     service_area: text(formData, "service_area"),
     business_hours: text(formData, "business_hours"),
     logo_url: text(formData, "logo_url") || null,

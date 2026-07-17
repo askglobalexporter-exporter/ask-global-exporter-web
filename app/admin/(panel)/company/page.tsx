@@ -28,6 +28,7 @@ export default async function CompanySettingsPage() {
           <label><span>Tampilan nomor WhatsApp</span><input name="whatsapp_display" defaultValue={settings.whatsapp_display} required /><small>Contoh: +62 851-9659-8995.</small></label>
           <label><span>Jam operasional</span><input name="business_hours" defaultValue={settings.business_hours} /></label>
           <label className="admin-field-full"><span>Alamat kantor</span><textarea name="address" rows={2} defaultValue={settings.address} /></label>
+          <label className="admin-field-full"><span>Link Google Maps</span><input name="maps_url" type="url" defaultValue={settings.maps_url} placeholder="https://maps.app.goo.gl/..." /><small>Tempel link lokasi dari Google Maps. Jika dikosongkan, website akan mencari otomatis berdasarkan alamat kantor.</small></label>
           <label className="admin-field-full"><span>Wilayah layanan</span><input name="service_area" defaultValue={settings.service_area} /></label>
           <ImageUploadField name="logo_url" label="Logo perusahaan" defaultValue={settings.logo_url ?? ""} folder="brand" help="Opsional. Jika diisi, file ini menggantikan tulisan nama brand pada header. Gunakan PNG atau WebP transparan." />
           <ImageUploadField name="whatsapp_logo_url" label="Logo WhatsApp" defaultValue={settings.whatsapp_logo_url ?? ""} folder="brand" help="Gunakan ikon persegi transparan. Jika kosong, panel memakai tanda WA bawaan." />
