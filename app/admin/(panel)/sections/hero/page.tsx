@@ -8,7 +8,7 @@ export const metadata = { title: "Hero Slideshow" };
 
 export default async function HeroSlidesPage() {
   const { supabase } = await requireAdmin("homepage.write");
-  const { data } = await supabase.from("homepage_hero_slides").select("id,eyebrow,title,summary,image_url,cta_label,cta_url,position,is_visible").order("position");
+  const { data } = await supabase.from("homepage_hero_slides").select("id,eyebrow,title,summary,image_url,mobile_image_url,desktop_position,mobile_position,cta_label,cta_url,position,is_visible").order("position");
   const slides = (data ?? []) as HomepageHeroSlide[];
   const preview = slides.find((slide)=>slide.is_visible) ?? slides[0];
   return <>

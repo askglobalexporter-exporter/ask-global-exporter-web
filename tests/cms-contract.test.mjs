@@ -42,6 +42,7 @@ test("admin image fields upload directly to ImageKit", async () => {
   assert.match(products, /name="gallery_images"/);
   assert.match(content, /name="featured_image_url"/);
   assert.match(homepage, /name="image_url"/);
+  assert.match(homepage, /name="mobile_image_url"/);
   assert.match(seo, /name="og_image_url"/);
 });
 
@@ -97,22 +98,30 @@ test("content creation and editing are separate, client-friendly workflows", asy
   assert.match(editor, /Preview tampilan publik/);
 });
 
-test("homepage sections have visual editors and a multi-slide hero", async () => {
-  const [migration, publicContent, homepage, sectionList, heroList, heroEditor] = await Promise.all([
+test("homepage sections have visual editors and a responsive multi-slide hero", async () => {
+  const [migration, mobileMigration, publicContent, homepage, sectionList, heroList, heroEditor, preview, styles] = await Promise.all([
     source("supabase/migrations/010_homepage_hero_slides.sql"),
+    source("supabase/migrations/011_hero_mobile_controls.sql"),
     source("lib/public-content.ts"),
     source("components/HomePage.tsx"),
     source("app/admin/(panel)/sections/page.tsx"),
     source("app/admin/(panel)/sections/hero/page.tsx"),
     source("components/admin/HeroSlideEditor.tsx"),
+    source("components/admin/AdminLivePreview.tsx"),
+    source("app/globals.css"),
   ]);
   assert.match(migration, /create table if not exists public\.homepage_hero_slides/i);
+  assert.match(mobileMigration, /mobile_image_url/);
   assert.match(publicContent, /getHomepageHeroSlides/);
   assert.match(homepage, /heroSlides/);
+  assert.match(homepage, /--hero-mobile-image/);
   assert.match(homepage, /setInterval/);
   assert.match(sectionList, /HomepageBuilder/);
   assert.match(heroList, /Tambah slide/);
   assert.match(heroEditor, /Live preview hero/);
+  assert.match(heroEditor, /Foto mobile/);
+  assert.match(preview, /admin-preview-device-switch/);
+  assert.match(styles, /min-height:100svh!important/);
 });
 
 test("admin performance stays bounded as client data grows", async () => {

@@ -33,7 +33,7 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
   const order = (key: string) => ({ order: sectionConfig[key]?.position ?? 0 });
   const section = (key:string) => resolvedHomepageContent(key, sectionConfig[key]?.content);
   const fallbackHero = section("hero");
-  const slides: HomepageHeroSlide[] = heroSlides.length ? heroSlides : [{ id:"default-hero", eyebrow:fallbackHero.eyebrow ?? "", title:fallbackHero.title ?? "", summary:fallbackHero.summary ?? "", image_url:fallbackHero.image_url ?? "/vanilla-grade-a.webp", cta_label:fallbackHero.cta_label ?? "Request quotation", cta_url:fallbackHero.cta_url ?? "/products/vanilla-beans#quotation", position:0, is_visible:true }];
+  const slides: HomepageHeroSlide[] = heroSlides.length ? heroSlides : [{ id:"default-hero", eyebrow:fallbackHero.eyebrow ?? "", title:fallbackHero.title ?? "", summary:fallbackHero.summary ?? "", image_url:fallbackHero.image_url ?? "/vanilla-grade-a.webp", mobile_image_url:null, desktop_position:"center right", mobile_position:"center center", cta_label:fallbackHero.cta_label ?? "Request quotation", cta_url:fallbackHero.cta_url ?? "/products/vanilla-beans#quotation", position:0, is_visible:true }];
   const activeSlide = slides[Math.min(activeHero, slides.length - 1)];
   useEffect(() => {
     if (slides.length < 2) return;
@@ -45,7 +45,7 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
   const documents = content?.exportDocuments.length ? content.exportDocuments : ["Commercial Invoice", "Packing List", "Certificate of Origin", "Phytosanitary", "Fumigation", "Specification Sheet"].map((title,index)=>({id:String(index),title,excerpt:"Subject to shipment requirements"} as CmsEntry));
   return (
     <main style={{ display: "flex", flexDirection: "column" }}>
-      {visible("hero") && <section className="hero" ref={hero} style={{...order("hero"),"--hero-image":`url("${activeSlide.image_url}")`} as CSSProperties}>
+      {visible("hero") && <section className="hero" ref={hero} style={{...order("hero"),"--hero-image":`url("${activeSlide.image_url}")`,"--hero-mobile-image":`url("${activeSlide.mobile_image_url || activeSlide.image_url}")`,"--hero-desktop-position":activeSlide.desktop_position,"--hero-mobile-position":activeSlide.mobile_position} as CSSProperties}>
         <AnimatePresence initial={false}><motion.div key={activeSlide.id} className="hero-image" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:.7}} style={{ y: heroY, scale: heroScale, backgroundImage:`url("${activeSlide.image_url}")` }} /></AnimatePresence>
         <div className="hero-shade" />
         <Header />

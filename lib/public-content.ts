@@ -54,6 +54,9 @@ export type HomepageHeroSlide = {
   title: string;
   summary: string;
   image_url: string;
+  mobile_image_url: string | null;
+  desktop_position: string;
+  mobile_position: string;
   cta_label: string;
   cta_url: string;
   position: number;
@@ -196,7 +199,7 @@ export async function getHomepageSectionConfig(): Promise<HomepageSection[]> {
 export async function getHomepageHeroSlides(): Promise<HomepageHeroSlide[]> {
   const supabase = publicClient();
   if (!supabase) return [];
-  const { data, error } = await supabase.from("homepage_hero_slides").select("id,eyebrow,title,summary,image_url,cta_label,cta_url,position,is_visible").eq("is_visible", true).order("position");
+  const { data, error } = await supabase.from("homepage_hero_slides").select("id,eyebrow,title,summary,image_url,mobile_image_url,desktop_position,mobile_position,cta_label,cta_url,position,is_visible").eq("is_visible", true).order("position");
   if (error) console.error("Unable to load homepage hero slides", error.message);
   return (data ?? []) as HomepageHeroSlide[];
 }

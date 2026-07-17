@@ -15,7 +15,10 @@ export function HeroSlideEditor({ slide }: { slide?:HomepageHeroSlide }) {
         <label><span>Urutan slide</span><input name="position" type="number" min="0" defaultValue={slide?.position ?? 0}/></label>
         <label className="admin-field-full"><span>Judul utama</span><input name="title" defaultValue={slide?.title ?? ""} required/></label>
         <label className="admin-field-full"><span>Teks penjelasan</span><textarea name="summary" rows={5} defaultValue={slide?.summary ?? ""}/></label>
-        <ImageUploadField name="image_url" label="Foto latar hero" defaultValue={slide?.image_url ?? ""} folder="homepage/hero" help="Gunakan foto horizontal berkualitas tinggi."/>
+        <ImageUploadField name="image_url" label="Foto desktop" defaultValue={slide?.image_url ?? ""} folder="homepage/hero" help="Gunakan foto horizontal berkualitas tinggi untuk laptop dan desktop."/>
+        <ImageUploadField name="mobile_image_url" label="Foto mobile (opsional)" defaultValue={slide?.mobile_image_url ?? ""} folder="homepage/hero/mobile" help="Gunakan foto vertikal. Jika kosong, foto desktop tetap dipakai."/>
+        <label><span>Fokus foto desktop</span><select name="desktop_position" defaultValue={slide?.desktop_position ?? "center right"}><option value="center left">Kiri</option><option value="center center">Tengah</option><option value="center right">Kanan</option></select></label>
+        <label><span>Fokus foto mobile</span><select name="mobile_position" defaultValue={slide?.mobile_position ?? "center center"}><option value="center left">Kiri</option><option value="center center">Tengah</option><option value="center right">Kanan</option><option value="top center">Atas</option><option value="bottom center">Bawah</option></select></label>
         <label><span>Teks tombol</span><input name="cta_label" defaultValue={slide?.cta_label ?? "Request quotation"}/></label>
         <label><span>Tujuan tombol</span><input name="cta_url" defaultValue={slide?.cta_url ?? "/products/vanilla-beans#quotation"}/></label>
         <label className="admin-check admin-field-full"><input name="is_visible" type="checkbox" defaultChecked={slide?.is_visible ?? true}/><span>Tampilkan slide ini di website</span></label>
