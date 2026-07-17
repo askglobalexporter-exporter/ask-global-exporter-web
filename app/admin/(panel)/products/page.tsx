@@ -3,6 +3,7 @@ import { Boxes, Plus, Trash2 } from "lucide-react";
 import { deleteProductAction, saveProductAction } from "@/app/admin/actions";
 import { requireAdmin } from "@/lib/admin/auth";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 export const metadata = { title: "Products" };
 
@@ -21,8 +22,8 @@ function ProductFields({ product }: { product?: ProductRow }) {
     <label className="admin-field-full"><span>Full description</span><textarea name="description" defaultValue={product?.description} rows={5} /></label>
     <label><span>MOQ</span><input name="moq" defaultValue={product?.moq ?? ""} /></label>
     <label><span>Lead time</span><input name="lead_time" defaultValue={product?.lead_time ?? ""} /></label>
-    <label className="admin-field-full"><span>Primary image URL</span><input name="primary_image_url" type="url" defaultValue={product?.primary_image_url ?? ""} placeholder="Choose or paste a Media Library URL" /></label>
-    <label className="admin-field-full"><span>Gallery image URLs · one per line</span><textarea name="gallery_images" rows={4} defaultValue={product?.product_images?.sort((a,b)=>a.position-b.position).map((image)=>image.image_url).join("\n") ?? ""} placeholder="https://ik.imagekit.io/…" /><small>The primary image is automatically included first on the public product page.</small></label>
+    <ImageUploadField name="primary_image_url" label="Primary product photo" defaultValue={product?.primary_image_url ?? ""} folder="products" help="Used on product cards and as the main product image." />
+    <ImageUploadField name="gallery_images" label="Product gallery" defaultValue={product?.product_images?.sort((a,b)=>a.position-b.position).map((image)=>image.image_url) ?? []} multiple folder="products" help="Upload several photos, then use the arrow buttons to arrange their order." />
     <label><span>Grades · one per line</span><textarea name="grades" defaultValue={product?.grades?.join("\n")} /></label>
     <label><span>Packaging · one per line</span><textarea name="packaging_options" defaultValue={product?.packaging_options?.join("\n")} /></label>
     <label><span>Incoterms · comma-separated</span><input name="incoterms" defaultValue={product?.incoterms?.join(", ")} /></label>

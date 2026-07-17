@@ -3,6 +3,7 @@ import { FileText, Plus, Trash2 } from "lucide-react";
 import { deleteCmsEntryAction, saveCmsEntryAction } from "@/app/admin/actions";
 import { requireAdmin } from "@/lib/admin/auth";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 const collections = ["homepage","about","faq","testimonial","blog","export_document","company_profile"];
 export const metadata = { title: "Content" };
@@ -12,7 +13,8 @@ type CmsRow = { id:string;collection:string;slug:string;title:string;excerpt:str
 function CmsFields({ collection, entry }: { collection: string; entry?: CmsRow }) {
   return <div className="admin-form-grid"><input type="hidden" name="id" value={entry?.id ?? ""} /><input type="hidden" name="collection" value={collection} />
     <label><span>Title</span><input name="title" defaultValue={entry?.title} required /></label><label><span>Slug / key</span><input name="slug" defaultValue={entry?.slug} /></label>
-    <label><span>Status</span><select name="status" defaultValue={entry?.status ?? "draft"}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label><label><span>Featured image URL</span><input name="featured_image_url" defaultValue={entry?.featured_image_url ?? ""} /></label>
+    <label><span>Status</span><select name="status" defaultValue={entry?.status ?? "draft"}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
+    <ImageUploadField name="featured_image_url" label="Featured photo" defaultValue={entry?.featured_image_url ?? ""} folder={collection === "blog" ? "blog" : "content"} />
     <label className="admin-field-full"><span>Summary</span><textarea name="excerpt" rows={2} defaultValue={entry?.excerpt ?? ""} /></label><label className="admin-field-full"><span>Content</span><textarea name="body" rows={7} defaultValue={entry?.content?.body ?? ""} /></label>
     <label><span>CTA label</span><input name="cta_label" defaultValue={entry?.content?.cta_label ?? ""} /></label><label><span>CTA URL</span><input name="cta_url" defaultValue={entry?.content?.cta_url ?? ""} /></label>
   </div>;

@@ -27,3 +27,20 @@ test("public CMS routes and safe homepage visibility policy exist", async () => 
   assert.match(migration,/for select to anon using \(true\)/i);
   await Promise.all([access(new URL("app/about/page.tsx",root)),access(new URL("app/blog/page.tsx",root)),access(new URL("app/blog/[slug]/page.tsx",root))]);
 });
+
+test("admin image fields upload directly to ImageKit", async () => {
+  const [field, products, content, homepage, seo] = await Promise.all([
+    source("components/admin/ImageUploadField.tsx"),
+    source("app/admin/(panel)/products/page.tsx"),
+    source("app/admin/(panel)/content/page.tsx"),
+    source("components/admin/HomepageBuilder.tsx"),
+    source("app/admin/(panel)/seo/page.tsx"),
+  ]);
+  assert.match(field, /uploadToImageKit/);
+  assert.match(field, /registerMediaAssetAction/);
+  assert.match(field, /type="file"/);
+  assert.match(products, /name="gallery_images"/);
+  assert.match(content, /name="featured_image_url"/);
+  assert.match(homepage, /name="image_url"/);
+  assert.match(seo, /name="og_image_url"/);
+});
