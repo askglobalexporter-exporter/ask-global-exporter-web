@@ -78,3 +78,21 @@ test("core editors include a required live preview", async () => {
     assert.match(editor, /AdminLivePreview/);
   }
 });
+
+test("admin performance stays bounded as client data grows", async () => {
+  const [migration, dashboard, products, content, inquiries, lazyDetails] = await Promise.all([
+    source("supabase/migrations/009_admin_performance.sql"),
+    source("app/admin/(panel)/page.tsx"),
+    source("app/admin/(panel)/products/page.tsx"),
+    source("app/admin/(panel)/content/page.tsx"),
+    source("app/admin/(panel)/inquiries/page.tsx"),
+    source("components/admin/AdminLazyDetails.tsx"),
+  ]);
+  assert.match(migration, /admin_dashboard_analytics/);
+  assert.match(migration, /count\(distinct visitor_hash\)/i);
+  assert.match(dashboard, /supabase\.rpc\("admin_dashboard_analytics"/);
+  assert.doesNotMatch(dashboard, /from\("site_events"\)/);
+  for (const page of [products, content, inquiries]) assert.match(page, /\.range\(/);
+  for (const editor of [products, content]) assert.match(editor, /AdminLazyDetails/);
+  assert.match(lazyDetails, /open \? children : null/);
+});

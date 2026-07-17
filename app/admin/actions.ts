@@ -25,6 +25,17 @@ function specs(value: string) {
   }).filter((row) => row.label && row.value);
 }
 
+function revalidateCmsCollection(collection: string) {
+  revalidatePath("/admin/content");
+  if (["homepage", "faq", "testimonial", "export_document", "company_profile"].includes(collection)) revalidatePath("/");
+  if (["about", "testimonial", "company_profile"].includes(collection)) revalidatePath("/about");
+  if (collection === "blog") revalidatePath("/blog");
+  if (["faq", "export_document"].includes(collection)) {
+    revalidatePath("/products/vanilla-beans");
+    revalidatePath("/products/[slug]", "page");
+  }
+}
+
 export async function loginAction(_: LoginState, formData: FormData): Promise<LoginState> {
   const email = text(formData, "email").toLowerCase();
   const password = text(formData, "password");
@@ -140,7 +151,7 @@ export async function saveCmsEntryAction(formData: FormData) {
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   await writeAudit(id ? "content.updated" : "content.created", collection, data.id, { title });
-  revalidatePath("/admin/content"); revalidatePath("/"); revalidatePath("/about"); revalidatePath("/blog"); revalidatePath("/products/vanilla-beans");
+  revalidateCmsCollection(collection);
 }
 
 export async function deleteCmsEntryAction(formData: FormData) {
@@ -153,7 +164,7 @@ export async function deleteCmsEntryAction(formData: FormData) {
   const { error } = await supabase.from("cms_entries").delete().eq("id", id);
   if (error) throw new Error(error.message);
   await writeAudit("content.deleted", "cms_entry", id);
-  revalidatePath("/admin/content"); revalidatePath("/"); revalidatePath("/about"); revalidatePath("/blog"); revalidatePath("/products/vanilla-beans");
+  revalidateCmsCollection(collection);
 }
 
 export async function saveSeoAction(formData: FormData) {

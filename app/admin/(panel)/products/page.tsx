@@ -5,6 +5,8 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { AdminLivePreview } from "@/components/admin/AdminLivePreview";
+import { AdminLazyDetails } from "@/components/admin/AdminLazyDetails";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 
 export const metadata = { title: "Products" };
 
@@ -35,12 +37,18 @@ function ProductFields({ product }: { product?: ProductRow }) {
   </div>;
 }
 
-export default async function ProductsAdminPage() {
+const PAGE_SIZE = 10;
+
+export default async function ProductsAdminPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const { supabase } = await requireAdmin("products.read");
-  const { data } = await supabase.from("products").select("*,product_images(image_url,position)").order("position").order("updated_at", { ascending: false });
+  const params = await searchParams;
+  const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const { data, count } = await supabase.from("products").select("*,product_images(image_url,position)", { count: "exact" }).order("position").order("updated_at", { ascending: false }).range(from, from + PAGE_SIZE - 1);
   const products = (data ?? []) as ProductRow[];
-  return <><div className="admin-page-head"><div><h1>Katalog produk</h1><p>Tambah dan perbarui produk. Preview akan berubah langsung sebelum Anda menyimpan.</p></div><div className="admin-page-actions"><span className="admin-badge published">{products.filter((p) => p.status === "published").length} terbit</span></div></div>
+  const pageCount = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
+  return <><div className="admin-page-head"><div><h1>Katalog produk</h1><p>Tambah dan perbarui produk. Preview akan berubah langsung sebelum Anda menyimpan.</p></div><div className="admin-page-actions"><span className="admin-badge published">{count ?? 0} produk</span></div></div>
     <div className="admin-split"><article className="admin-card"><div className="admin-card-head"><div><h2><Plus size={14} /> Tambah produk</h2><p>Mulai sebagai draft, periksa preview, lalu terbitkan saat siap.</p></div></div><form action={saveProductAction} className="admin-form"><ProductFields /><AdminLivePreview kind="product" label="Preview produk"/><div className="admin-form-actions"><SubmitButton pendingLabel="Membuat…">Buat produk</SubmitButton></div></form></article>
-      <section>{products.length ? products.map((product) => <details className="admin-list-card" key={product.id}><summary>{product.primary_image_url ? <Image className="admin-list-thumb" src={product.primary_image_url} alt="" width={48} height={48} unoptimized /> : <span className="admin-list-thumb" />}<div><b>{product.name}</b><small>/{product.slug} · {product.category}</small></div>{product.is_featured && <span className="admin-badge contacted">Prioritas</span>}<span className={`admin-badge ${product.status}`}>{product.status}</span></summary><div className="admin-list-card-body"><form action={saveProductAction} className="admin-form"><ProductFields product={product} /><AdminLivePreview kind="product" label="Preview perubahan"/><div className="admin-form-actions"><SubmitButton>Simpan perubahan</SubmitButton></div></form><form action={deleteProductAction} className="admin-form-actions"><input type="hidden" name="id" value={product.id} /><SubmitButton className="admin-danger-button" pendingLabel="Menghapus…"><Trash2 size={13} />Hapus produk</SubmitButton></form></div></details>) : <div className="admin-card admin-empty"><Boxes size={24} /><h3>Belum ada produk</h3><p>Gunakan formulir di sebelah kiri untuk menambahkan produk pertama.</p></div>}</section>
+      <section>{products.length ? products.map((product) => <AdminLazyDetails key={product.id} summary={<>{product.primary_image_url ? <Image className="admin-list-thumb" src={product.primary_image_url} alt="" width={48} height={48} unoptimized /> : <span className="admin-list-thumb" />}<div><b>{product.name}</b><small>/{product.slug} · {product.category}</small></div>{product.is_featured && <span className="admin-badge contacted">Prioritas</span>}<span className={`admin-badge ${product.status}`}>{product.status}</span></>}><div className="admin-list-card-body"><form action={saveProductAction} className="admin-form"><ProductFields product={product} /><AdminLivePreview kind="product" label="Preview perubahan"/><div className="admin-form-actions"><SubmitButton>Simpan perubahan</SubmitButton></div></form><form action={deleteProductAction} className="admin-form-actions"><input type="hidden" name="id" value={product.id} /><SubmitButton className="admin-danger-button" pendingLabel="Menghapus…"><Trash2 size={13} />Hapus produk</SubmitButton></form></div></AdminLazyDetails>) : <div className="admin-card admin-empty"><Boxes size={24} /><h3>Belum ada produk</h3><p>Gunakan formulir di sebelah kiri untuk menambahkan produk pertama.</p></div>}<AdminPagination basePath="/admin/products" page={page} pageCount={pageCount} /></section>
     </div></>;
 }

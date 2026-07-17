@@ -5,6 +5,8 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { AdminLivePreview } from "@/components/admin/AdminLivePreview";
+import { AdminLazyDetails } from "@/components/admin/AdminLazyDetails";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 
 const collections = ["homepage","about","faq","testimonial","blog","export_document","company_profile"];
 const collectionLabels: Record<string,string> = { homepage:"Beranda",about:"Tentang kami",faq:"FAQ",testimonial:"Testimoni",blog:"Blog",export_document:"Dokumen ekspor",company_profile:"Profil perusahaan" };
@@ -22,13 +24,18 @@ function CmsFields({ collection, entry }: { collection: string; entry?: CmsRow }
   </div>;
 }
 
-export default async function ContentAdminPage({ searchParams }: { searchParams: Promise<{ collection?: string }> }) {
+const PAGE_SIZE = 10;
+
+export default async function ContentAdminPage({ searchParams }: { searchParams: Promise<{ collection?: string; page?: string }> }) {
   const { profile, supabase } = await requireAdmin("content.read");
   const allowedCollections = profile.role === "marketing" ? ["testimonial","blog"] : collections;
   const params = await searchParams; const collection = allowedCollections.includes(params.collection ?? "") ? params.collection! : allowedCollections[0];
-  const { data } = await supabase.from("cms_entries").select("*").eq("collection", collection).order("updated_at", { ascending: false });
+  const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const { data, count } = await supabase.from("cms_entries").select("*", { count: "exact" }).eq("collection", collection).order("updated_at", { ascending: false }).range(from, from + PAGE_SIZE - 1);
   const entries = (data ?? []) as CmsRow[];
-  return <><div className="admin-page-head"><div><h1>Kelola konten</h1><p>Pilih jenis konten, isi formulir sederhana, periksa preview, lalu simpan sebagai draft atau terbitkan.</p></div></div><nav className="admin-tabs">{allowedCollections.map((item) => <Link prefetch={false} key={item} className={collection === item ? "active" : ""} href={`/admin/content?collection=${item}`}>{collectionLabels[item]}</Link>)}</nav>
+  const pageCount = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
+  return <><div className="admin-page-head"><div><h1>Kelola konten</h1><p>Pilih jenis konten, isi formulir sederhana, periksa preview, lalu simpan sebagai draft atau terbitkan.</p></div></div><nav className="admin-tabs">{allowedCollections.map((item) => <Link key={item} className={collection === item ? "active" : ""} href={`/admin/content?collection=${item}`}>{collectionLabels[item]}</Link>)}</nav>
     <div className="admin-split"><article className="admin-card"><div className="admin-card-head"><div><h2><Plus size={14} /> Tambah {collectionLabels[collection]}</h2><p>Preview berubah otomatis saat Anda mengetik.</p></div></div><form action={saveCmsEntryAction} className="admin-form"><CmsFields collection={collection} /><AdminLivePreview kind="content" label={`Preview ${collectionLabels[collection]}`}/><div className="admin-form-actions"><SubmitButton pendingLabel="Membuat…">Buat konten</SubmitButton></div></form></article>
-      <section>{entries.length ? entries.map((entry) => <details className="admin-list-card" key={entry.id}><summary><span className="admin-list-thumb" style={{display:"grid",placeItems:"center"}}><FileText size={18} /></span><div><b>{entry.title}</b><small>/{entry.slug} · Diperbarui {new Date(entry.updated_at).toLocaleDateString("id-ID")}</small></div><span className={`admin-badge ${entry.status}`}>{entry.status}</span></summary><div className="admin-list-card-body"><form action={saveCmsEntryAction} className="admin-form"><CmsFields collection={collection} entry={entry} /><AdminLivePreview kind="content" label="Preview perubahan"/><div className="admin-form-actions"><SubmitButton>Simpan perubahan</SubmitButton></div></form><form action={deleteCmsEntryAction} className="admin-form-actions"><input type="hidden" name="id" value={entry.id} /><input type="hidden" name="collection" value={collection}/><SubmitButton className="admin-danger-button" pendingLabel="Menghapus…"><Trash2 size={13} />Hapus konten</SubmitButton></form></div></details>) : <div className="admin-card admin-empty"><FileText size={24} /><h3>Belum ada {collectionLabels[collection]}</h3><p>Gunakan formulir di sebelah kiri untuk membuat konten pertama.</p></div>}</section></div></>;
+      <section>{entries.length ? entries.map((entry) => <AdminLazyDetails key={entry.id} summary={<><span className="admin-list-thumb" style={{display:"grid",placeItems:"center"}}><FileText size={18} /></span><div><b>{entry.title}</b><small>/{entry.slug} · Diperbarui {new Date(entry.updated_at).toLocaleDateString("id-ID")}</small></div><span className={`admin-badge ${entry.status}`}>{entry.status}</span></>}><div className="admin-list-card-body"><form action={saveCmsEntryAction} className="admin-form"><CmsFields collection={collection} entry={entry} /><AdminLivePreview kind="content" label="Preview perubahan"/><div className="admin-form-actions"><SubmitButton>Simpan perubahan</SubmitButton></div></form><form action={deleteCmsEntryAction} className="admin-form-actions"><input type="hidden" name="id" value={entry.id} /><input type="hidden" name="collection" value={collection}/><SubmitButton className="admin-danger-button" pendingLabel="Menghapus…"><Trash2 size={13} />Hapus konten</SubmitButton></form></div></AdminLazyDetails>) : <div className="admin-card admin-empty"><FileText size={24} /><h3>Belum ada {collectionLabels[collection]}</h3><p>Gunakan formulir di sebelah kiri untuk membuat konten pertama.</p></div>}<AdminPagination basePath="/admin/content" page={page} pageCount={pageCount} params={{ collection }} /></section></div></>;
 }
