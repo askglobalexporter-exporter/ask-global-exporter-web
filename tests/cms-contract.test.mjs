@@ -146,3 +146,21 @@ test("admin performance stays bounded as client data grows", async () => {
   assert.doesNotMatch(content, /<form/);
   assert.match(lazyDetails, /open \? children : null/);
 });
+
+test("public inquiries include privacy, durable spam protection, and email alerts", async () => {
+  const [privacy, migration, server, notification, quotation, sample, env] = await Promise.all([
+    source("app/privacy/page.tsx"), source("supabase/migrations/013_inquiry_protection.sql"), source("lib/inquiry-server.ts"),
+    source("lib/inquiry-notification.ts"), source("app/api/quotation/route.ts"), source("app/api/sample/route.ts"), source(".env.example"),
+  ]);
+  assert.match(privacy, /Privacy Policy/);
+  assert.match(migration, /consume_inquiry_rate_limit/);
+  assert.match(migration, /service_role/);
+  assert.match(server, /siteverify/);
+  assert.match(notification, /api\.resend\.com\/emails/);
+  for (const route of [quotation, sample]) {
+    assert.match(route, /verifyTurnstile/);
+    assert.match(route, /sendInquiryNotification/);
+  }
+  assert.match(env, /TURNSTILE_SECRET_KEY/);
+  assert.match(env, /RESEND_API_KEY/);
+});

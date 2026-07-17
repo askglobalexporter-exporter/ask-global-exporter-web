@@ -1,22 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, CheckCircle2, LoaderCircle } from "lucide-react";
 import { quotationSchema, type QuotationInput } from "@/lib/inquiry-validation";
 import { products } from "@/data/products";
+import { TurnstileField } from "./TurnstileField";
 
 export function QuotationForm({ product, grade, sourcePage = "/products/vanilla-beans" }: { product?: string; grade?: string; sourcePage?: string }) {
-  const [reference, setReference] = useState(""); const [serverError, setServerError] = useState("");
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<QuotationInput>({
-    resolver: zodResolver(quotationSchema), defaultValues: { product: product || "", grade: grade || "", sampleRequired: "no", consent: false, sourcePage },
+  const [reference, setReference] = useState(""); const [serverError, setServerError] = useState(""); const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<QuotationInput>({
+    resolver: zodResolver(quotationSchema), defaultValues: { product: product || "", grade: grade || "", sampleRequired: "no", consent: false, sourcePage, turnstileToken: "" },
   });
   async function submit(data: QuotationInput) {
     setServerError("");
     try { const response = await fetch("/api/quotation", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       const result = await response.json(); if (!response.ok) throw new Error(result.error); setReference(result.reference); reset();
     } catch (error) { setServerError(error instanceof Error ? error.message : "Unable to submit your inquiry."); }
+    finally { setValue("turnstileToken", ""); setTurnstileResetKey((value) => value + 1); }
   }
   if (reference) return <div className="quote-success" role="status"><CheckCircle2/><h3>Inquiry received.</h3><p>Reference: <b>{reference}</b></p><p>Our export team will review your requirements and respond within one business day.</p><button type="button" onClick={() => setReference("")}>Submit another inquiry</button></div>;
   const fieldError = (name: keyof QuotationInput) => errors[name]?.message ? <small className="field-error">{String(errors[name]?.message)}</small> : null;
@@ -39,9 +42,11 @@ export function QuotationForm({ product, grade, sourcePage = "/products/vanilla-
       <label className="consent-field full-field"><input type="checkbox" {...register("consent")} /><span>I consent to Ask Global using these details to respond to my inquiry. *</span>{fieldError("consent")}</label>
       <label className="quote-honeypot" aria-hidden="true"><span>Website</span><input {...register("website")} tabIndex={-1} autoComplete="off" /></label>
       <input type="hidden" {...register("sourcePage")} />
+      <input type="hidden" {...register("turnstileToken")} />
+      <TurnstileField onToken={(token) => setValue("turnstileToken", token)} resetKey={turnstileResetKey} />
     </div>
     {serverError && <p className="form-error" role="alert">{serverError}</p>}
     <button className="btn btn-gold quote-submit" disabled={isSubmitting}>{isSubmitting ? <><LoaderCircle className="spin" size={17}/> Sending inquiry</> : <>Request a quotation <ArrowRight size={17}/></>}</button>
-    <p className="form-note">Your information is used only to review and respond to this B2B export inquiry.</p>
+    <p className="form-note">Your information is used only to review and respond to this inquiry. See our <Link href="/privacy">Privacy Policy</Link>.</p>
   </form>;
 }

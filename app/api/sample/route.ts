@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import { sampleSchema } from "@/lib/inquiry-validation";
-import { getSupabaseAdmin, inquiryReference, isRateLimited } from "@/lib/inquiry-server";
+import { sendInquiryNotification } from "@/lib/inquiry-notification";
+import { getSupabaseAdmin, inquiryReference, isRateLimited, verifyTurnstile } from "@/lib/inquiry-server";
 
 export async function POST(request: Request) {
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (isRateLimited(`sample:${ip}`)) return NextResponse.json({ error: "Please wait before submitting another request." }, { status: 429 });
+    if (await isRateLimited("sample", ip)) return NextResponse.json({ error: "Too many requests. Please wait 15 minutes before trying again." }, { status: 429 });
     const parsed = sampleSchema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Please check the form." }, { status: 400 });
     if (parsed.data.website) return NextResponse.json({ ok: true, reference: "ASK-RECEIVED" });
+    if (!await verifyTurnstile(parsed.data.turnstileToken, ip)) return NextResponse.json({ error: "Please complete the spam protection check and try again." }, { status: 400 });
     const supabase = getSupabaseAdmin();
     if (!supabase) return NextResponse.json({ error: "Sample requests are being configured. Please use WhatsApp for immediate assistance." }, { status: 503 });
     const reference = inquiryReference("SMP"); const data = parsed.data;
@@ -18,6 +20,12 @@ export async function POST(request: Request) {
       courier_account: data.courierAccount || null, additional_notes: data.notes || null, consent: data.consent, source_page: data.sourcePage || "/products" });
     if (error) throw error;
     await supabase.from("site_events").insert({ event_type: "sample_submitted", path: data.sourcePage || "/products", product_slug: data.product });
+    await sendInquiryNotification({
+      reference, type: "Sample request", companyName: data.companyName, contactPerson: data.contactPerson, email: data.email,
+      country: data.country, product: data.product, details: [["Grade", data.grade], ["Intended use", data.intendedUse],
+        ["Expected volume", data.expectedVolume], ["Shipping address", data.shippingAddress],
+        ["Courier account", data.courierAccount], ["Notes", data.notes]],
+    }).catch((notificationError) => console.error("Sample notification failed", notificationError));
     return NextResponse.json({ ok: true, reference }, { status: 201 });
   } catch { return NextResponse.json({ error: "We could not submit your request. Please try again or use WhatsApp." }, { status: 500 }); }
 }
