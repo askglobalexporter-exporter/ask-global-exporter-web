@@ -48,6 +48,18 @@ export type HomepageSection = {
   content: CmsContent;
 };
 
+export type HomepageHeroSlide = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  summary: string;
+  image_url: string;
+  cta_label: string;
+  cta_url: string;
+  position: number;
+  is_visible: boolean;
+};
+
 export type SeoSetting = {
   route:string;
   meta_title:string|null;
@@ -179,6 +191,14 @@ export async function getHomepageSectionConfig(): Promise<HomepageSection[]> {
   const { data, error } = await supabase.from("homepage_sections").select("section_key,label,position,is_visible,content").order("position");
   if (error) console.error("Unable to load homepage layout", error.message);
   return (data ?? []) as HomepageSection[];
+}
+
+export async function getHomepageHeroSlides(): Promise<HomepageHeroSlide[]> {
+  const supabase = publicClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase.from("homepage_hero_slides").select("id,eyebrow,title,summary,image_url,cta_label,cta_url,position,is_visible").eq("is_visible", true).order("position");
+  if (error) console.error("Unable to load homepage hero slides", error.message);
+  return (data ?? []) as HomepageHeroSlide[];
 }
 
 export async function getPublishedCmsEntries(collection: string): Promise<CmsEntry[]> {

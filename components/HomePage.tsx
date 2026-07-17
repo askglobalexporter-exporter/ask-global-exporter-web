@@ -2,15 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Check, Globe2, Mail, MapPin, PackageCheck, Quote, ShieldCheck, Ship, Sparkles } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Header } from "./Header";
 import { BrandLogo } from "./BrandLogo";
 import { products as fallbackProducts, type Product } from "@/data/products";
-import type { CmsEntry, HomepageSection } from "@/lib/public-content";
+import type { CmsEntry, HomepageHeroSlide, HomepageSection } from "@/lib/public-content";
 import { useCompanySettings } from "./CompanySettingsProvider";
+import { resolvedHomepageContent } from "@/lib/homepage-sections";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: .75, ease } };
@@ -18,7 +19,7 @@ const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0
 type SectionConfig = Record<string, HomepageSection>;
 type HomeContent = { about:CmsEntry[];companyProfile:CmsEntry[];faqs:CmsEntry[];testimonials:CmsEntry[];blog:CmsEntry[];exportDocuments:CmsEntry[] };
 
-export function HomePage({ catalog = fallbackProducts, sectionConfig = {}, content }: { catalog?: Product[]; sectionConfig?: SectionConfig; content?:HomeContent }) {
+export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionConfig = {}, content }: { catalog?: Product[]; heroSlides?: HomepageHeroSlide[]; sectionConfig?: SectionConfig; content?:HomeContent }) {
   const company = useCompanySettings();
   const whatsappNumber = company.whatsapp_number.replace(/\D/g, "");
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello ${company.brand_name},\n\nI am interested in your products. Please provide a quotation and additional information.\n\nThank you.`)}`;
@@ -27,24 +28,34 @@ export function HomePage({ catalog = fallbackProducts, sectionConfig = {}, conte
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1.02, 1.12]);
 
+  const [activeHero, setActiveHero] = useState(0);
   const visible = (key: string) => sectionConfig[key]?.is_visible ?? true;
   const order = (key: string) => ({ order: sectionConfig[key]?.position ?? 0 });
-  const section = (key:string) => sectionConfig[key]?.content ?? {};
+  const section = (key:string) => resolvedHomepageContent(key, sectionConfig[key]?.content);
+  const fallbackHero = section("hero");
+  const slides: HomepageHeroSlide[] = heroSlides.length ? heroSlides : [{ id:"default-hero", eyebrow:fallbackHero.eyebrow ?? "", title:fallbackHero.title ?? "", summary:fallbackHero.summary ?? "", image_url:fallbackHero.image_url ?? "/vanilla-grade-a.webp", cta_label:fallbackHero.cta_label ?? "Request quotation", cta_url:fallbackHero.cta_url ?? "/products/vanilla-beans#quotation", position:0, is_visible:true }];
+  const activeSlide = slides[Math.min(activeHero, slides.length - 1)];
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const timer = window.setInterval(() => setActiveHero((current) => (current + 1) % slides.length), 6500);
+    return () => window.clearInterval(timer);
+  }, [slides.length]);
   const about = content?.about.find((entry)=>entry.slug === "company-overview") ?? content?.about[0];
   const promise = content?.companyProfile.find((entry)=>entry.slug === "company-principle") ?? content?.companyProfile[0];
   const documents = content?.exportDocuments.length ? content.exportDocuments : ["Commercial Invoice", "Packing List", "Certificate of Origin", "Phytosanitary", "Fumigation", "Specification Sheet"].map((title,index)=>({id:String(index),title,excerpt:"Subject to shipment requirements"} as CmsEntry));
   return (
     <main style={{ display: "flex", flexDirection: "column" }}>
-      {visible("hero") && <section className="hero" ref={hero} style={{...order("hero"),"--hero-image":`url("${section("hero").image_url || "/vanilla-grade-a.webp"}")`} as CSSProperties}>
-        <motion.div className="hero-image" style={{ y: heroY, scale: heroScale }} />
+      {visible("hero") && <section className="hero" ref={hero} style={{...order("hero"),"--hero-image":`url("${activeSlide.image_url}")`} as CSSProperties}>
+        <AnimatePresence initial={false}><motion.div key={activeSlide.id} className="hero-image" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:.7}} style={{ y: heroY, scale: heroScale, backgroundImage:`url("${activeSlide.image_url}")` }} /></AnimatePresence>
         <div className="hero-shade" />
         <Header />
-        <motion.div className="mobile-hero-copy shell" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, delay: .2, ease }}>
-          <div className="eyebrow"><span /> {section("hero").eyebrow || "Premium Indonesian vanilla"}</div>
-          <h1>{section("hero").title || "Vanilla Beans"}</h1>
-          <p>{section("hero").summary || "Natural, aromatic, and export-ready—sourced with care in Indonesia."}</p>
-          <Link href={section("hero").cta_url || "/products/vanilla-beans#quotation"} className="btn btn-gold">{section("hero").cta_label || "Request quotation"} <ArrowRight size={16} /></Link>
-        </motion.div>
+        <AnimatePresence mode="wait"><motion.div key={activeSlide.id} className="mobile-hero-copy shell" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{opacity:0,y:-12}} transition={{ duration: .55, ease }}>
+          <div className="eyebrow"><span /> {activeSlide.eyebrow}</div>
+          <h1>{activeSlide.title}</h1>
+          <p>{activeSlide.summary}</p>
+          <Link href={activeSlide.cta_url} className="btn btn-gold">{activeSlide.cta_label} <ArrowRight size={16} /></Link>
+        </motion.div></AnimatePresence>
+        {slides.length > 1 && <div className="hero-slide-controls shell" aria-label="Hero slideshow">{slides.map((slide,index)=><button key={slide.id} type="button" className={index === activeHero ? "active" : ""} onClick={()=>setActiveHero(index)} aria-label={`Tampilkan slide ${index + 1}`} />)}</div>}
       </section>}
 
       {visible("about") && <section className="intro section shell" id="about" style={order("about")}>

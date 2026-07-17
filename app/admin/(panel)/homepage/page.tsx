@@ -1,7 +1,2 @@
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
-import { HomepageBuilder } from "@/components/admin/HomepageBuilder";
-import { requireAdmin } from "@/lib/admin/auth";
-
-export const metadata = { title: "Editor Beranda" };
-export default async function HomepageBuilderPage() { const { supabase } = await requireAdmin("homepage.write"); const { data } = await supabase.from("homepage_sections").select("id,section_key,label,section_type,position,is_visible,content").order("position"); return <><div className="admin-page-head"><div><h1>Editor beranda</h1><p>Atur urutan, tampilkan atau sembunyikan bagian, lalu edit isinya dengan preview langsung.</p></div><div className="admin-page-actions"><Link className="admin-secondary-button" href="/" target="_blank">Lihat website <ExternalLink size={14} /></Link></div></div><div className="admin-grid-2 admin-homepage-grid"><article className="admin-card"><div className="admin-card-head"><div><h2>Susunan bagian</h2><p>Klik “Edit isi dan lihat preview” pada bagian yang ingin diubah.</p></div></div><HomepageBuilder initialSections={data ?? []} /></article><aside className="admin-card"><div className="admin-card-head"><div><h2>Konten berulang</h2><p>FAQ, blog, testimoni, dan dokumen dikelola terpisah agar lebih mudah.</p></div></div><p style={{fontSize:11,color:"#6f7b75"}}>Gunakan menu Konten untuk menambah pertanyaan, artikel, testimoni, profil perusahaan, dan dokumen ekspor.</p><Link className="admin-primary-button" href="/admin/content">Buka menu konten</Link></aside></div></>; }
+import { redirect } from "next/navigation";
+export default function LegacyHomepageEditorPage() { redirect("/admin/sections"); }

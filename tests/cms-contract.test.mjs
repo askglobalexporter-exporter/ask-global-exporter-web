@@ -32,8 +32,8 @@ test("admin image fields upload directly to ImageKit", async () => {
   const [field, products, content, homepage, seo] = await Promise.all([
     source("components/admin/ImageUploadField.tsx"),
     source("app/admin/(panel)/products/page.tsx"),
-    source("app/admin/(panel)/content/page.tsx"),
-    source("components/admin/HomepageBuilder.tsx"),
+    source("components/admin/CmsEntryEditor.tsx"),
+    source("components/admin/HeroSlideEditor.tsx"),
     source("app/admin/(panel)/seo/page.tsx"),
   ]);
   assert.match(field, /uploadToImageKit/);
@@ -67,8 +67,8 @@ test("core editors include a required live preview", async () => {
   const [preview, products, content, homepage, seo, company] = await Promise.all([
     source("components/admin/AdminLivePreview.tsx"),
     source("app/admin/(panel)/products/page.tsx"),
-    source("app/admin/(panel)/content/page.tsx"),
-    source("components/admin/HomepageBuilder.tsx"),
+    source("components/admin/CmsEntryEditor.tsx"),
+    source("components/admin/HomepageSectionEditor.tsx"),
     source("app/admin/(panel)/seo/page.tsx"),
     source("app/admin/(panel)/company/page.tsx"),
   ]);
@@ -77,6 +77,39 @@ test("core editors include a required live preview", async () => {
   for (const editor of [products, content, homepage, seo, company]) {
     assert.match(editor, /AdminLivePreview/);
   }
+});
+
+test("content creation and editing are separate, client-friendly workflows", async () => {
+  const [list, create, edit, editor] = await Promise.all([
+    source("app/admin/(panel)/content/page.tsx"),
+    source("app/admin/(panel)/content/new/page.tsx"),
+    source("app/admin/(panel)/content/[id]/edit/page.tsx"),
+    source("components/admin/CmsEntryEditor.tsx"),
+  ]);
+  assert.match(list, /Tambah \{cmsCollectionLabels\[collection\]\}/);
+  assert.match(list, /\/admin\/content\/\$\{entry\.id\}\/edit/);
+  assert.match(create, /mode="create"/);
+  assert.match(edit, /mode="edit"/);
+  assert.match(editor, /Konten yang sedang tayang|Edit/);
+  assert.match(editor, /Preview tampilan publik/);
+});
+
+test("homepage sections have visual editors and a multi-slide hero", async () => {
+  const [migration, publicContent, homepage, sectionList, heroList, heroEditor] = await Promise.all([
+    source("supabase/migrations/010_homepage_hero_slides.sql"),
+    source("lib/public-content.ts"),
+    source("components/HomePage.tsx"),
+    source("app/admin/(panel)/sections/page.tsx"),
+    source("app/admin/(panel)/sections/hero/page.tsx"),
+    source("components/admin/HeroSlideEditor.tsx"),
+  ]);
+  assert.match(migration, /create table if not exists public\.homepage_hero_slides/i);
+  assert.match(publicContent, /getHomepageHeroSlides/);
+  assert.match(homepage, /heroSlides/);
+  assert.match(homepage, /setInterval/);
+  assert.match(sectionList, /HomepageBuilder/);
+  assert.match(heroList, /Tambah slide/);
+  assert.match(heroEditor, /Live preview hero/);
 });
 
 test("admin performance stays bounded as client data grows", async () => {
@@ -93,6 +126,7 @@ test("admin performance stays bounded as client data grows", async () => {
   assert.match(dashboard, /supabase\.rpc\("admin_dashboard_analytics"/);
   assert.doesNotMatch(dashboard, /from\("site_events"\)/);
   for (const page of [products, content, inquiries]) assert.match(page, /\.range\(/);
-  for (const editor of [products, content]) assert.match(editor, /AdminLazyDetails/);
+  assert.match(products, /AdminLazyDetails/);
+  assert.doesNotMatch(content, /<form/);
   assert.match(lazyDetails, /open \? children : null/);
 });

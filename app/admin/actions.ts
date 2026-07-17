@@ -138,7 +138,16 @@ export async function saveCmsEntryAction(formData: FormData) {
     slug: slugify(text(formData, "slug") || title),
     title,
     excerpt: text(formData, "excerpt") || null,
-    content: { body: text(formData, "body"), cta_label: text(formData, "cta_label"), cta_url: text(formData, "cta_url") },
+    content: {
+      body: text(formData, "body"),
+      question: collection === "faq" ? title : "",
+      answer: collection === "faq" ? text(formData, "body") : "",
+      author: collection === "testimonial" ? title : "",
+      company: text(formData, "company"),
+      role: text(formData, "role"),
+      cta_label: text(formData, "cta_label"),
+      cta_url: text(formData, "cta_url"),
+    },
     status,
     featured_image_url: text(formData, "featured_image_url") || null,
     published_at: status === "published" ? new Date().toISOString() : null,
@@ -152,6 +161,8 @@ export async function saveCmsEntryAction(formData: FormData) {
   if (error) throw new Error(error.message);
   await writeAudit(id ? "content.updated" : "content.created", collection, data.id, { title });
   revalidateCmsCollection(collection);
+  const redirectTo = text(formData, "redirect_to").replace(":id", data.id);
+  if (redirectTo.startsWith("/admin/content")) redirect(redirectTo);
 }
 
 export async function deleteCmsEntryAction(formData: FormData) {
@@ -165,6 +176,8 @@ export async function deleteCmsEntryAction(formData: FormData) {
   if (error) throw new Error(error.message);
   await writeAudit("content.deleted", "cms_entry", id);
   revalidateCmsCollection(collection);
+  const redirectTo = text(formData, "redirect_to");
+  if (redirectTo.startsWith("/admin/content")) redirect(redirectTo);
 }
 
 export async function saveSeoAction(formData: FormData) {
@@ -196,7 +209,7 @@ export async function saveHomepageSectionsAction(formData: FormData) {
   const error = results.find((result) => result.error)?.error;
   if (error) throw new Error(error.message);
   await writeAudit("homepage.reordered", "homepage", undefined, { count: sections.length });
-  revalidatePath("/admin/homepage"); revalidatePath("/");
+  revalidatePath("/admin/sections"); revalidatePath("/");
 }
 
 export async function saveHomepageSectionContentAction(formData: FormData) {
@@ -215,7 +228,46 @@ export async function saveHomepageSectionContentAction(formData: FormData) {
   const { error } = await supabase.from("homepage_sections").update({ content, updated_by: user.id, updated_at: new Date().toISOString() }).eq("id", id);
   if (error) throw new Error(error.message);
   await writeAudit("homepage.content_updated", "homepage_section", id, { sectionKey });
-  revalidatePath("/admin/homepage"); revalidatePath("/");
+  revalidatePath("/admin/sections"); revalidatePath("/");
+  const redirectTo = text(formData, "redirect_to");
+  if (redirectTo.startsWith("/admin/sections/")) redirect(redirectTo);
+}
+
+export async function saveHeroSlideAction(formData: FormData) {
+  const { user, supabase } = await requireAdmin("homepage.write");
+  const id = text(formData, "id");
+  const payload = {
+    eyebrow: text(formData, "eyebrow"),
+    title: text(formData, "title"),
+    summary: text(formData, "summary"),
+    image_url: text(formData, "image_url"),
+    cta_label: text(formData, "cta_label") || "Request quotation",
+    cta_url: text(formData, "cta_url") || "/products/vanilla-beans#quotation",
+    position: Number(text(formData, "position") || 0),
+    is_visible: checked(formData, "is_visible"),
+    updated_by: user.id,
+    updated_at: new Date().toISOString(),
+  };
+  if (!payload.title || !payload.image_url) throw new Error("Judul dan foto slide wajib diisi.");
+  const result = id
+    ? await supabase.from("homepage_hero_slides").update(payload).eq("id", id).select("id").single()
+    : await supabase.from("homepage_hero_slides").insert(payload).select("id").single();
+  if (result.error) throw new Error(result.error.message);
+  await writeAudit(id ? "hero_slide.updated" : "hero_slide.created", "homepage_hero_slide", result.data.id, { title: payload.title });
+  revalidatePath("/admin/sections/hero");
+  revalidatePath("/");
+  redirect(`/admin/sections/hero/${result.data.id}/edit?saved=${id ? "updated" : "created"}`);
+}
+
+export async function deleteHeroSlideAction(formData: FormData) {
+  const { supabase } = await requireAdmin("homepage.write");
+  const id = text(formData, "id");
+  const { error } = await supabase.from("homepage_hero_slides").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  await writeAudit("hero_slide.deleted", "homepage_hero_slide", id);
+  revalidatePath("/admin/sections/hero");
+  revalidatePath("/");
+  redirect("/admin/sections/hero");
 }
 
 export async function saveCompanySettingsAction(formData: FormData) {

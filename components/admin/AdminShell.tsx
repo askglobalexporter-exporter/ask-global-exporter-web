@@ -16,7 +16,7 @@ const navigation = [
   { href: "/admin/inquiries", label: "Permintaan buyer", icon: MessageSquareText, permission: "inquiries.read" },
   { href: "/admin/products", label: "Produk", icon: Boxes, permission: "products.read" },
   { href: "/admin/content", label: "Konten", icon: FileText, permission: "content.read" },
-  { href: "/admin/homepage", label: "Beranda", icon: Home, permission: "homepage.write" },
+  { href: "/admin/sections", label: "Section website", icon: Home, permission: "homepage.write" },
   { href: "/admin/company", label: "Identitas perusahaan", icon: Building2, permission: "homepage.write" },
   { href: "/admin/media", label: "Koleksi media", icon: ImageIcon, permission: "media.read" },
   { href: "/admin/seo", label: "Pengaturan SEO", icon: Globe2, permission: "seo.write" },
