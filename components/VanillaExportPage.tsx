@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, FileCheck2, Leaf, MapPin, PackageCheck, Ship, Sprout } from "lucide-react";
 import { Header } from "./Header";
 import { QuotationForm } from "./QuotationForm";
+import { useCompanySettings } from "./CompanySettingsProvider";
 import type { Product, ProductFaq } from "@/data/products";
 
 const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-70px" }, transition: { duration: .7 } };
@@ -43,13 +44,14 @@ const defaultFaqs: Array<[string,string]> = [
 ];
 
 export function VanillaExportPage({ catalog = [], faqItems = [], documentNames = [] }: { catalog?:Product[];faqItems?:ProductFaq[];documentNames?:string[] }) {
+  const company = useCompanySettings();
   const primary = catalog.find((product)=>product.slug === "grade-a-vanilla-beans") ?? catalog[0];
   const specs = primary?.specifications.length ? primary.specifications.map((item)=>[item.label,item.value]) : defaultSpecs;
   const grades = catalog.length ? catalog.slice(0,4).map((product)=>[product.name,product.typicalLength,product.moisture,product.application]) : defaultGrades;
   const faqs = faqItems.length ? faqItems.map((item)=>[item.question,item.answer]) : defaultFaqs;
   const documents = documentNames.length ? documentNames : ["Certificate of Origin","Phytosanitary Certificate","Commercial Invoice","Packing List","Fumigation Certificate"];
   const gallery = catalog.length ? catalog.slice(0,3).map((product)=>({src:product.image,alt:product.name})) : [{src:"/vanilla-grade-a.webp",alt:"Whole premium Indonesian vanilla beans"},{src:"/vanilla-grade-b.webp",alt:"Extraction-grade Indonesian vanilla beans"},{src:"/vanilla-cuts.webp",alt:"Indonesian vanilla cuts for extraction"}];
-  const whatsapp = "https://wa.me/6285196598995?text=" + encodeURIComponent("Hello Ask Global, I am interested in Indonesian vanilla beans. Please send your export price list and available grades.");
+  const whatsapp = `https://wa.me/${company.whatsapp_number.replace(/\D/g, "")}?text=` + encodeURIComponent(`Hello ${company.brand_name}, I am interested in Indonesian vanilla beans. Please send your export price list and available grades.`);
   return <main className="vanilla-page">
     <div className="vanilla-nav"><Header /></div>
     <section className="vanilla-product-hero">
@@ -120,6 +122,6 @@ export function VanillaExportPage({ catalog = [], faqItems = [], documentNames =
     </section>
 
     <section className="vanilla-final-cta"><div className="shell"><motion.div {...reveal}><small>Start your sourcing conversation</small><h2>Premium vanilla.<br /><em>Reliable export.</em></h2><div><a href="#quotation" className="btn btn-gold">Request quotation <ArrowRight/></a><a href={whatsapp} target="_blank" rel="noreferrer" className="btn btn-glass">Request sample</a></div></motion.div></div></section>
-    <footer className="vanilla-footer"><div className="shell"><span>© {new Date().getFullYear()} Ask Global</span><span>Indonesian Vanilla Beans · Global Supply</span></div></footer>
+    <footer className="vanilla-footer"><div className="shell"><span>© {new Date().getFullYear()} {company.brand_name}</span><span>{company.tagline}</span></div></footer>
   </main>;
 }

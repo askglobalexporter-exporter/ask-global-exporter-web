@@ -44,3 +44,37 @@ test("admin image fields upload directly to ImageKit", async () => {
   assert.match(homepage, /name="image_url"/);
   assert.match(seo, /name="og_image_url"/);
 });
+
+test("company identity is editable once and reused by the public website", async () => {
+  const [migration, content, action, companyPage, layout, home] = await Promise.all([
+    source("supabase/migrations/008_company_settings.sql"),
+    source("lib/public-content.ts"),
+    source("app/admin/actions.ts"),
+    source("app/admin/(panel)/company/page.tsx"),
+    source("app/layout.tsx"),
+    source("components/HomePage.tsx"),
+  ]);
+  assert.match(migration, /create table if not exists public\.company_settings/i);
+  assert.match(migration, /for select to anon using \(true\)/i);
+  assert.match(content, /getCompanySettings/);
+  assert.match(action, /saveCompanySettingsAction/);
+  assert.match(companyPage, /name="whatsapp_logo_url"/);
+  assert.match(layout, /CompanySettingsProvider/);
+  assert.match(home, /useCompanySettings/);
+});
+
+test("core editors include a required live preview", async () => {
+  const [preview, products, content, homepage, seo, company] = await Promise.all([
+    source("components/admin/AdminLivePreview.tsx"),
+    source("app/admin/(panel)/products/page.tsx"),
+    source("app/admin/(panel)/content/page.tsx"),
+    source("components/admin/HomepageBuilder.tsx"),
+    source("app/admin/(panel)/seo/page.tsx"),
+    source("app/admin/(panel)/company/page.tsx"),
+  ]);
+  assert.match(preview, /Preview langsung/);
+  assert.match(preview, /admin-preview-refresh/);
+  for (const editor of [products, content, homepage, seo, company]) {
+    assert.match(editor, /AdminLivePreview/);
+  }
+});

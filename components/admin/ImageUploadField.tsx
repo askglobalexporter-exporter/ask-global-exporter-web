@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, useId, useState, useTransition } from "react";
+import { ChangeEvent, useEffect, useId, useState, useTransition } from "react";
 import { ArrowLeft, ArrowRight, ImagePlus, LoaderCircle, Trash2 } from "lucide-react";
 import { upload as uploadToImageKit } from "@imagekit/next";
 import { registerMediaAssetAction } from "@/app/admin/actions";
@@ -27,7 +27,7 @@ type UploadedImage = {
 
 async function prepareImage(file: File) {
   if (!file.type.startsWith("image/") || file.type === "image/gif") {
-    throw new Error(`${file.name} is not a supported photo.`);
+    throw new Error(`${file.name} bukan format foto yang didukung.`);
   }
 
   const bitmap = await createImageBitmap(file);
@@ -39,19 +39,19 @@ async function prepareImage(file: File) {
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext("2d");
-  if (!context) throw new Error("Image processing is unavailable in this browser.");
+  if (!context) throw new Error("Foto tidak dapat diproses di browser ini.");
   context.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (value) => value ? resolve(value) : reject(new Error("Could not optimize the photo.")),
+      (value) => value ? resolve(value) : reject(new Error("Foto tidak dapat dioptimalkan.")),
       "image/webp",
       0.84,
     );
   });
 
-  if (blob.size > 10 * 1024 * 1024) throw new Error(`${file.name} is larger than 10 MB after optimization.`);
+  if (blob.size > 10 * 1024 * 1024) throw new Error(`${file.name} masih lebih besar dari 10 MB setelah dioptimalkan.`);
   return {
     blob,
     width,
@@ -64,7 +64,7 @@ async function uploadImage(file: File, folder: string): Promise<UploadedImage> {
   const prepared = await prepareImage(file);
   const authResponse = await fetch("/api/admin/imagekit-auth", { cache: "no-store" });
   const auth = await authResponse.json() as UploadAuth;
-  if (!authResponse.ok) throw new Error(auth.error || "Image upload is not configured.");
+  if (!authResponse.ok) throw new Error(auth.error || "Fitur upload foto belum dikonfigurasi.");
 
   const result = await uploadToImageKit({
     file: prepared.blob,
@@ -78,7 +78,7 @@ async function uploadImage(file: File, folder: string): Promise<UploadedImage> {
     checks: '"file.size" <= "10MB"',
   });
 
-  if (!result.fileId || !result.filePath || !result.url) throw new Error("ImageKit did not return complete file details.");
+  if (!result.fileId || !result.filePath || !result.url) throw new Error("Data foto dari ImageKit belum lengkap.");
 
   return {
     url: result.url,
@@ -112,6 +112,10 @@ export function ImageUploadField({
   const [urls, setUrls] = useState(initial.filter(Boolean));
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    window.dispatchEvent(new Event("admin-preview-refresh"));
+  }, [urls]);
 
   function remove(index: number) {
     setUrls((current) => current.filter((_, itemIndex) => itemIndex !== index));
@@ -154,10 +158,10 @@ export function ImageUploadField({
           uploaded.push(image.url);
         }
         setUrls((current) => multiple ? [...current, ...uploaded] : uploaded.slice(-1));
-        setMessage(`${uploaded.length} photo${uploaded.length > 1 ? "s" : ""} uploaded and ready to save.`);
+        setMessage(`${uploaded.length} foto berhasil di-upload dan siap disimpan.`);
         input.value = "";
       } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Upload failed.");
+        setMessage(error instanceof Error ? error.message : "Upload gagal. Silakan coba lagi.");
       }
     });
   }
@@ -169,31 +173,31 @@ export function ImageUploadField({
     <span className="admin-image-upload-label">{label}</span>
     {urls.length > 0 && <div className={`admin-image-preview-grid ${multiple ? "is-multiple" : ""}`}>
       {urls.map((url, index) => <div className="admin-image-preview" key={`${url}-${index}`}>
-        <Image src={url} alt={`${label} preview ${index + 1}`} fill sizes="160px" unoptimized />
+        <Image src={url} alt={`Preview ${label} ${index + 1}`} fill sizes="160px" unoptimized />
         <div className="admin-image-preview-actions">
           {multiple && <>
-            <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Move image left"><ArrowLeft size={13} /></button>
-            <button type="button" onClick={() => move(index, 1)} disabled={index === urls.length - 1} aria-label="Move image right"><ArrowRight size={13} /></button>
+            <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Geser foto ke kiri"><ArrowLeft size={13} /></button>
+            <button type="button" onClick={() => move(index, 1)} disabled={index === urls.length - 1} aria-label="Geser foto ke kanan"><ArrowRight size={13} /></button>
           </>}
-          <button type="button" onClick={() => remove(index)} aria-label="Remove image"><Trash2 size={13} /></button>
+          <button type="button" onClick={() => remove(index)} aria-label="Hapus foto"><Trash2 size={13} /></button>
         </div>
       </div>)}
     </div>}
     <div className="admin-image-upload-controls">
       <label htmlFor={inputId} className="admin-secondary-button">
         {pending ? <LoaderCircle className="admin-spin" size={15} /> : <ImagePlus size={15} />}
-        {pending ? "Uploading…" : multiple ? "Upload photos" : urls.length ? "Replace photo" : "Upload photo"}
+        {pending ? "Mengunggah…" : multiple ? "Upload foto" : urls.length ? "Ganti foto" : "Upload foto"}
       </label>
       <input id={inputId} className="admin-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple={multiple} onChange={handleUpload} disabled={pending} />
-      {urls.length > 0 && <button type="button" className="admin-secondary-button" onClick={() => setUrls([])} disabled={pending}>Clear</button>}
+      {urls.length > 0 && <button type="button" className="admin-secondary-button" onClick={() => setUrls([])} disabled={pending}>Kosongkan</button>}
     </div>
     <details className="admin-image-url-fallback">
-      <summary>Use an existing image URL</summary>
+      <summary>Gunakan URL gambar yang sudah ada</summary>
       {multiple
-        ? <textarea value={urls.join("\n")} onChange={(event) => setUrls(event.target.value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean))} rows={3} placeholder="One image URL per line" />
+        ? <textarea value={urls.join("\n")} onChange={(event) => setUrls(event.target.value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean))} rows={3} placeholder="Satu URL gambar per baris" />
         : <input type="url" value={urls[0] ?? ""} onChange={(event) => setUrls(event.target.value ? [event.target.value] : [])} placeholder="https://ik.imagekit.io/…" />}
     </details>
-    <small>{help || "JPG, PNG, WebP, or AVIF · automatically converted to WebP · maximum 10 MB"}</small>
-    {message && <p className={`admin-upload-message ${message.includes("failed") || message.includes("not ") || message.includes("larger") ? "error" : ""}`}>{message}</p>}
+    <small>{help || "JPG, PNG, WebP, atau AVIF · otomatis diubah ke WebP · maksimal 10 MB"}</small>
+    {message && <p className={`admin-upload-message ${message.includes("gagal") || message.includes("belum") || message.includes("lebih besar") ? "error" : ""}`}>{message}</p>}
   </div>;
 }

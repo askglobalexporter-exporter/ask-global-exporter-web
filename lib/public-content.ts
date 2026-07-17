@@ -58,6 +58,36 @@ export type SeoSetting = {
   robots:string|null;
 };
 
+export type CompanySettings = {
+  brand_name: string;
+  legal_name: string;
+  tagline: string;
+  description: string;
+  email: string;
+  whatsapp_number: string;
+  whatsapp_display: string;
+  address: string;
+  service_area: string;
+  business_hours: string;
+  logo_url: string | null;
+  whatsapp_logo_url: string | null;
+};
+
+export const defaultCompanySettings: CompanySettings = {
+  brand_name: "Ask Global",
+  legal_name: "ASK Global",
+  tagline: "Indonesian commodities · Global trading",
+  description: "Connecting global buyers with premium Indonesian commodities through consistent, transparent, and reliable trade.",
+  email: "askglobalexporter@gmail.com",
+  whatsapp_number: "6285196598995",
+  whatsapp_display: "+62 851-9659-8995",
+  address: "Jakarta, Indonesia",
+  service_area: "Serving buyers worldwide",
+  business_hours: "Mon–Fri, 09:00–17:00 WIB",
+  logo_url: null,
+  whatsapp_logo_url: null,
+};
+
 type DbProductImage = { image_url: string; alt_text: string | null; position: number };
 type DbProduct = {
   slug: string; name: string; category: string; short_description: string; description: string;
@@ -180,4 +210,15 @@ export async function getSeoSetting(route: string): Promise<SeoSetting | null> {
   const { data, error } = await supabase.from("seo_settings").select("*").eq("route", route).maybeSingle();
   if (error) console.error(`Unable to load SEO for ${route}`, error.message);
   return data as SeoSetting | null;
+}
+
+export async function getCompanySettings(): Promise<CompanySettings> {
+  const supabase = publicClient();
+  if (!supabase) return defaultCompanySettings;
+  const { data, error } = await supabase.from("company_settings").select("brand_name,legal_name,tagline,description,email,whatsapp_number,whatsapp_display,address,service_area,business_hours,logo_url,whatsapp_logo_url").eq("singleton", true).maybeSingle();
+  if (error) {
+    console.error("Unable to load company settings", error.message);
+    return defaultCompanySettings;
+  }
+  return data ? { ...defaultCompanySettings, ...(data as CompanySettings) } : defaultCompanySettings;
 }

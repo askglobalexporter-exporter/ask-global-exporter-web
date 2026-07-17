@@ -10,6 +10,7 @@ import { Header } from "./Header";
 import { BrandLogo } from "./BrandLogo";
 import { products as fallbackProducts, type Product } from "@/data/products";
 import type { CmsEntry, HomepageSection } from "@/lib/public-content";
+import { useCompanySettings } from "./CompanySettingsProvider";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-80px" }, transition: { duration: .75, ease } };
@@ -18,6 +19,9 @@ type SectionConfig = Record<string, HomepageSection>;
 type HomeContent = { about:CmsEntry[];companyProfile:CmsEntry[];faqs:CmsEntry[];testimonials:CmsEntry[];blog:CmsEntry[];exportDocuments:CmsEntry[] };
 
 export function HomePage({ catalog = fallbackProducts, sectionConfig = {}, content }: { catalog?: Product[]; sectionConfig?: SectionConfig; content?:HomeContent }) {
+  const company = useCompanySettings();
+  const whatsappNumber = company.whatsapp_number.replace(/\D/g, "");
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello ${company.brand_name},\n\nI am interested in your products. Please provide a quotation and additional information.\n\nThank you.`)}`;
   const hero = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: hero, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
@@ -164,28 +168,28 @@ export function HomePage({ catalog = fallbackProducts, sectionConfig = {}, conte
             <p>{section("contact").summary || "Share your product, specification, quantity, packaging, and destination. Our team will respond with availability and the next sourcing steps."}</p>
           </motion.div>
           <motion.div {...reveal} className="contact-card">
-            <a className="contact-row" href="https://wa.me/6285196598995?text=Hello%20Ask%20Global%2C%0A%0AI%20am%20interested%20in%20your%20products.%20Please%20provide%20a%20quotation%20and%20additional%20information.%0A%0AThank%20you." target="_blank" rel="noreferrer">
-              <span className="contact-icon">WA</span><span><small>WhatsApp</small><b>+62 851-9659-8995</b></span><ArrowRight />
+            <a className="contact-row" href={whatsappUrl} target="_blank" rel="noreferrer">
+              <span className="contact-icon">{company.whatsapp_logo_url ? <Image src={company.whatsapp_logo_url} alt="WhatsApp" width={22} height={22} unoptimized /> : "WA"}</span><span><small>WhatsApp</small><b>{company.whatsapp_display}</b></span><ArrowRight />
             </a>
-            <a className="contact-row" href="mailto:askglobalexporter@gmail.com?subject=Product%20Inquiry%20-%20Ask%20Global">
-              <span className="contact-icon"><Mail /></span><span><small>Email</small><b>askglobalexporter@gmail.com</b></span><ArrowRight />
+            <a className="contact-row" href={`mailto:${company.email}?subject=${encodeURIComponent(`Product Inquiry - ${company.brand_name}`)}`}>
+              <span className="contact-icon"><Mail /></span><span><small>Email</small><b>{company.email}</b></span><ArrowRight />
             </a>
             <div className="contact-row">
-              <span className="contact-icon"><MapPin /></span><span><small>Office</small><b>Jakarta, Indonesia</b></span>
+              <span className="contact-icon"><MapPin /></span><span><small>Office</small><b>{company.address}</b></span>
             </div>
-            <p className="hours">Business hours · Mon–Fri, 09:00–17:00 WIB</p>
+            <p className="hours">Business hours · {company.business_hours}</p>
           </motion.div>
         </div>
       </section>}
 
       <footer style={{ order: 99 }}>
         <div className="shell footer-top">
-          <div><div className="brand footer-brand"><BrandLogo /></div><p>Connecting global buyers with premium Indonesian commodities through consistent, transparent, and reliable trade.</p></div>
+          <div><div className="brand footer-brand"><BrandLogo /></div><p>{company.description}</p></div>
           <div><small>Explore</small><a href="#about">About</a><a href="#products">Products</a><a href="#process">How it works</a></div>
-          <div><small>Connect</small><a href="#contact">Contact</a><a href="mailto:askglobalexporter@gmail.com">Email</a><a href="https://wa.me/6285196598995">WhatsApp</a></div>
-          <div><small>Head office</small><p>Jakarta, Indonesia<br />Serving buyers worldwide</p></div>
+          <div><small>Connect</small><a href="#contact">Contact</a><a href={`mailto:${company.email}`}>Email</a><a href={`https://wa.me/${whatsappNumber}`}>WhatsApp</a></div>
+          <div><small>Head office</small><p>{company.address}<br />{company.service_area}</p></div>
         </div>
-        <div className="shell footer-bottom"><span>© {new Date().getFullYear()} Ask Global</span><span>Indonesian commodities · Global trading</span></div>
+        <div className="shell footer-bottom"><span>© {new Date().getFullYear()} {company.brand_name}</span><span>{company.tagline}</span></div>
       </footer>
     </main>
   );

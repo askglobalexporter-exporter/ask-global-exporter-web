@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { BrandLogo } from "./BrandLogo";
+import { useCompanySettings } from "./CompanySettingsProvider";
 
 const links = [
   ["About", "/about"],
@@ -14,10 +15,11 @@ const links = [
 ];
 
 export function Header() {
+  const company = useCompanySettings();
   const [open, setOpen] = useState(false);
   return (
     <header className="site-header">
-      <Link href="/" className="brand" aria-label="Ask Global home">
+      <Link href="/" className="brand" aria-label={`${company.brand_name} home`}>
         <BrandLogo />
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">

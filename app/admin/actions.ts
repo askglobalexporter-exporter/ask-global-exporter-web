@@ -207,6 +207,33 @@ export async function saveHomepageSectionContentAction(formData: FormData) {
   revalidatePath("/admin/homepage"); revalidatePath("/");
 }
 
+export async function saveCompanySettingsAction(formData: FormData) {
+  const { user, supabase } = await requireAdmin("homepage.write");
+  const whatsappNumber = text(formData, "whatsapp_number").replace(/\D/g, "");
+  const payload = {
+    singleton: true,
+    brand_name: text(formData, "brand_name") || "Ask Global",
+    legal_name: text(formData, "legal_name") || "ASK Global",
+    tagline: text(formData, "tagline"),
+    description: text(formData, "description"),
+    email: text(formData, "email").toLowerCase(),
+    whatsapp_number: whatsappNumber,
+    whatsapp_display: text(formData, "whatsapp_display"),
+    address: text(formData, "address"),
+    service_area: text(formData, "service_area"),
+    business_hours: text(formData, "business_hours"),
+    logo_url: text(formData, "logo_url") || null,
+    whatsapp_logo_url: text(formData, "whatsapp_logo_url") || null,
+    updated_by: user.id,
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = await supabase.from("company_settings").upsert(payload, { onConflict: "singleton" });
+  if (error) throw new Error(error.message);
+  await writeAudit("company.settings_updated", "company_settings", undefined, { brandName: payload.brand_name });
+  revalidatePath("/admin/company");
+  revalidatePath("/", "layout");
+}
+
 export async function updateInquiryStatusAction(formData: FormData) {
   const { user, supabase } = await requireAdmin("inquiries.write");
   const type = text(formData, "type") as "rfq" | "sample";
