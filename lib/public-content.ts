@@ -88,6 +88,10 @@ function mapProduct(item: DbProduct): Product {
     .map((entry) => entry.image_url)
     .filter(Boolean);
   if (!gallery.includes(image)) gallery.unshift(image);
+  for (const fallbackImage of fallback?.gallery ?? []) {
+    if (gallery.length >= 3) break;
+    if (!gallery.includes(fallbackImage)) gallery.push(fallbackImage);
+  }
 
   return {
     slug: item.slug,
@@ -128,7 +132,7 @@ export async function getPublishedProducts(): Promise<Product[]> {
     console.error("Unable to load published products", error.message);
     return [];
   }
-  return (data as unknown as DbProduct[]).map(mapProduct);
+  return (data as unknown as DbProduct[]).map(mapProduct).sort((a,b)=>Number(Boolean(b.isFeatured))-Number(Boolean(a.isFeatured)));
 }
 
 export async function getPublishedProduct(slug: string): Promise<Product | undefined> {
