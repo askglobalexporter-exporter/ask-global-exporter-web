@@ -164,3 +164,24 @@ test("public inquiries include privacy, durable spam protection, and email alert
   assert.match(env, /TURNSTILE_SECRET_KEY/);
   assert.match(env, /RESEND_API_KEY/);
 });
+
+test("buyer testimonials are moderated before the latest three appear publicly", async () => {
+  const [route, form, page, homepage, contentList, editor] = await Promise.all([
+    source("app/api/testimonials/route.ts"),
+    source("components/TestimonialForm.tsx"),
+    source("app/testimonials/page.tsx"),
+    source("components/HomePage.tsx"),
+    source("app/admin/(panel)/content/page.tsx"),
+    source("components/admin/CmsEntryEditor.tsx"),
+  ]);
+  assert.match(route, /collection: "testimonial"/);
+  assert.match(route, /status: "draft"/);
+  assert.match(route, /verifyTurnstile/);
+  assert.match(route, /isRateLimited\("testimonial"/);
+  assert.match(form, /publication|reviewed before publication/i);
+  assert.match(page, /getPublishedCmsEntries\("testimonial"\)/);
+  assert.match(homepage, /testimonials\.slice\(0,3\)/);
+  assert.match(contentList, /Menunggu review/);
+  assert.match(editor, /Terbit — tampil di website/);
+  assert.match(editor, /Arsip — tidak tampil/);
+});

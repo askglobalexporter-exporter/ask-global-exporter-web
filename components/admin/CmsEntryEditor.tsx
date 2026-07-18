@@ -19,7 +19,7 @@ export type CmsEditorEntry = {
 const labels: Record<CmsCollection, { title:string; excerpt:string; body:string; help:string }> = {
   about: { title:"Judul bagian", excerpt:"Paragraf pembuka", body:"Paragraf lanjutan", help:"Konten ini tampil pada pengantar Tentang Ask Global." },
   faq: { title:"Pertanyaan", excerpt:"Ringkasan singkat (opsional)", body:"Jawaban", help:"Tulis satu pertanyaan dan jawaban dalam satu konten." },
-  testimonial: { title:"Nama pemberi testimoni", excerpt:"Ringkasan (opsional)", body:"Isi testimoni", help:"Tambahkan nama, perusahaan, jabatan, dan kutipan buyer." },
+  testimonial: { title:"Nama pemberi testimoni", excerpt:"Ringkasan (opsional)", body:"Isi testimoni", help:"Kiriman buyer masuk sebagai Draft. Periksa isinya, lalu pilih Terbit untuk menayangkan atau Arsip untuk menolaknya." },
   blog: { title:"Judul artikel", excerpt:"Ringkasan artikel", body:"Isi artikel", help:"Ringkasan tampil pada kartu; isi lengkap tampil pada halaman artikel." },
   export_document: { title:"Nama dokumen", excerpt:"Keterangan singkat", body:"Penjelasan tambahan", help:"Dokumen terbit akan tampil pada bagian compliance." },
   company_profile: { title:"Judul profil/prinsip", excerpt:"Paragraf pembuka", body:"Paragraf lanjutan", help:"Dipakai untuk cerita, prinsip, dan komitmen perusahaan." },
@@ -37,7 +37,7 @@ export function CmsEntryEditor({ collection, entry, mode }: { collection: CmsCol
       <div className="admin-form-grid">
         <label className="admin-field-full"><span>{field.title}</span><input name="title" defaultValue={entry?.title} required /></label>
         <label><span>Alamat halaman</span><input name="slug" defaultValue={entry?.slug} placeholder="dibuat otomatis dari judul" /><small>Biasanya tidak perlu diubah.</small></label>
-        <label><span>Status</span><select name="status" defaultValue={entry?.status ?? "draft"}><option value="draft">Draft — belum tampil</option><option value="published">Terbit — tampil di website</option><option value="archived">Arsip</option></select></label>
+        <label><span>Status</span><select name="status" defaultValue={entry?.status ?? "draft"}><option value="draft">{collection === "testimonial" ? "Menunggu review — belum tampil" : "Draft — belum tampil"}</option><option value="published">Terbit — tampil di website</option><option value="archived">Arsip — tidak tampil</option></select></label>
         <label className="admin-field-full"><span>{field.excerpt}</span><textarea name="excerpt" rows={3} defaultValue={entry?.excerpt ?? ""} /></label>
         <label className="admin-field-full"><span>{field.body}</span><textarea name="body" rows={9} defaultValue={entry?.content?.body ?? entry?.content?.answer ?? ""} required={collection === "faq" || collection === "blog"} /></label>
         {collection === "testimonial" && <><label><span>Perusahaan</span><input name="company" defaultValue={entry?.content?.company ?? ""} /></label><label><span>Jabatan</span><input name="role" defaultValue={entry?.content?.role ?? ""} /></label></>}

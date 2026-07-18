@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { products as fallbackProducts, type Product, type ProductFaq } from "@/data/products";
+import { defaultBuyerFaqs, products as fallbackProducts, type Product, type ProductFaq } from "@/data/products";
 import { getSupabasePublishableKey, getSupabaseUrl, hasSupabaseBrowserConfig } from "@/lib/supabase/env";
 
 let client: ReturnType<typeof createClient> | null | undefined;
@@ -162,7 +162,7 @@ function mapProduct(item: DbProduct): Product {
     incoterms: item.incoterms ?? [],
     monthlyCapacity: "Available upon request",
     specifications: specifications.length ? specifications : fallback?.specifications ?? [],
-    faqs: fallback?.faqs ?? [],
+    faqs: fallback?.faqs ?? defaultBuyerFaqs,
     seoTitle: item.seo_title || item.name,
     seoDescription: item.seo_description || item.short_description || item.description,
     isFeatured: item.is_featured,

@@ -29,11 +29,15 @@ export type Product = {
   grades?: string[];
 };
 
-const sharedFaqs: ProductFaq[] = [
-  { question: "Can we request a sample before ordering?", answer: "Yes. Sample availability is subject to approval, and shipping fees may apply. Specifications are confirmed before dispatch." },
-  { question: "Can specifications be customized?", answer: "Custom sorting, packaging, and commercial specifications can be discussed and confirmed against an approved lot or sample." },
-  { question: "Which Incoterms are available?", answer: "EXW, FOB, CFR, CIF, and DAP may be discussed. The final term depends on the destination, shipment size, and agreement." },
-  { question: "Can you support repeat monthly orders?", answer: "Repeat-order sourcing support is available. Monthly capacity and seasonal availability are confirmed during quotation." },
+export const defaultBuyerFaqs: ProductFaq[] = [
+  { question: "What is the minimum order quantity?", answer: "MOQ depends on product grade, packaging, lot availability, and destination. The confirmed MOQ will be included in our quotation." },
+  { question: "Can we request a sample before placing a bulk order?", answer: "Yes. Samples are available for qualified buyers, subject to approval and product availability. Sample and courier charges may apply." },
+  { question: "Can product specifications be customized?", answer: "Yes. Sorting, moisture range, bean length, packaging, and other requirements can be discussed and confirmed against an approved lot or sample." },
+  { question: "Which export documents can you provide?", answer: "Commercial Invoice and Packing List are standard. Certificate of Origin, Phytosanitary Certificate, Fumigation Certificate, and other documents can be arranged when required." },
+  { question: "What packaging options are available?", answer: "Products can be supplied in vacuum-sealed food-grade inner packs and export cartons. Custom pack sizes, buyer labels, and private-label packaging can be discussed." },
+  { question: "How long does an export order take?", answer: "Lead time depends on product availability, volume, packaging, documentation, and destination. The confirmed timeline will be stated in the quotation." },
+  { question: "Which Incoterms are available?", answer: "EXW, FOB, CFR, CIF, and DAP may be discussed. The final Incoterm depends on the shipment, destination, and commercial agreement." },
+  { question: "Can you support repeat or monthly orders?", answer: "Yes. Repeat-order sourcing can be arranged, subject to seasonal availability, approved specifications, and confirmed monthly capacity." },
 ];
 
 const commonSpecs = (grade: string, form: string): ProductSpecification[] => [
@@ -63,7 +67,7 @@ export const products: Product[] = [
     image: "/vanilla-grade-a.webp", gallery: ["/vanilla-grade-a.webp", "/hero-vanilla.webp", "/vanilla-grade-b.webp"],
     packaging: ["Vacuum-sealed inner packs", "Food-grade export cartons", "Custom pack sizes upon agreement"],
     leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
-    specifications: commonSpecs("Premium / Gourmet Grade A", "Whole, cured vanilla beans"), faqs: sharedFaqs,
+    specifications: commonSpecs("Premium / Gourmet Grade A", "Whole, cured vanilla beans"), faqs: defaultBuyerFaqs,
     seoTitle: "Grade A Vanilla Beans Indonesia | Premium Export Supplier",
     seoDescription: "Source premium Grade A Indonesian vanilla beans with buyer-specific sorting, vacuum packaging, samples, and export documentation support.",
   },
@@ -75,7 +79,7 @@ export const products: Product[] = [
     image: "/vanilla-grade-b.webp", gallery: ["/vanilla-grade-b.webp", "/vanilla-grade-a.webp", "/vanilla-cuts.webp"],
     packaging: ["Vacuum-sealed bulk packs", "Food-grade export cartons", "Custom industrial packaging"],
     leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
-    specifications: commonSpecs("Extraction Grade B", "Whole cured beans; appearance varies by lot"), faqs: sharedFaqs,
+    specifications: commonSpecs("Extraction Grade B", "Whole cured beans; appearance varies by lot"), faqs: defaultBuyerFaqs,
     seoTitle: "Grade B Vanilla Beans Indonesia | Extraction Grade Supplier",
     seoDescription: "Indonesian Grade B vanilla beans for extraction and manufacturing, supplied with editable specifications and export support.",
   },
@@ -87,7 +91,7 @@ export const products: Product[] = [
     image: "/vanilla-cuts.webp", gallery: ["/vanilla-cuts.webp", "/vanilla-grade-b.webp", "/vanilla-powder.webp"],
     packaging: ["Vacuum-sealed bulk packs", "Food-grade liner and carton", "Custom cut and pack specification"],
     leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
-    specifications: commonSpecs("Vanilla Cuts", "Cut cured vanilla bean segments"), faqs: sharedFaqs,
+    specifications: commonSpecs("Vanilla Cuts", "Cut cured vanilla bean segments"), faqs: defaultBuyerFaqs,
     seoTitle: "Vanilla Cuts Indonesia | Bulk Extraction Supplier",
     seoDescription: "Source Indonesian vanilla cuts for extraction and industrial applications with custom sizing and export-ready packaging.",
   },
@@ -99,7 +103,7 @@ export const products: Product[] = [
     image: "/vanilla-powder.webp", gallery: ["/vanilla-powder.webp", "/vanilla-cuts.webp", "/vanilla-grade-a.webp"],
     packaging: ["Food-grade sealed inner packs", "Export carton", "Custom pack sizes upon agreement"],
     leadTime: "Confirmed with quotation", shipping: "International air and sea freight", monthlyCapacity: "Available upon request",
-    specifications: commonSpecs("Ground Vanilla — subject to availability", "Fine ground vanilla material"), faqs: sharedFaqs,
+    specifications: commonSpecs("Ground Vanilla — subject to availability", "Fine ground vanilla material"), faqs: defaultBuyerFaqs,
     seoTitle: "Vanilla Powder Indonesia | Bulk Vanilla Ingredient",
     seoDescription: "Indonesian vanilla powder for B2B ingredient applications, subject to confirmed availability and buyer specification.",
   },

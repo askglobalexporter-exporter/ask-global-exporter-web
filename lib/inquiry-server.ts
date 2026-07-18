@@ -7,7 +7,7 @@ function memoryRateLimited(key: string) {
   if (now - last < 30_000) return true;
   attempts.set(key, now); return false;
 }
-export async function isRateLimited(scope: "quote" | "sample", ip: string) {
+export async function isRateLimited(scope: "quote" | "sample" | "testimonial", ip: string) {
   const key = createHash("sha256").update(`${scope}:${ip}`).digest("hex");
   const supabase = getSupabaseAdmin();
   if (!supabase) return memoryRateLimited(key);

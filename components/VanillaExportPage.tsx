@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Check, FileCheck2, Leaf, MapPin, PackageCheck, S
 import { Header } from "./Header";
 import { QuotationForm } from "./QuotationForm";
 import { useCompanySettings } from "./CompanySettingsProvider";
-import type { Product, ProductFaq } from "@/data/products";
+import { defaultBuyerFaqs, type Product, type ProductFaq } from "@/data/products";
 
 const reveal = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-70px" }, transition: { duration: .7 } };
 
@@ -34,21 +34,12 @@ const process = [
   [Ship, "International Shipping", "Documents and freight are coordinated for reliable delivery to your destination."],
 ];
 
-const defaultFaqs: Array<[string,string]> = [
-  ["Can I request samples before a bulk order?", "Yes. Qualified buyers can request representative grade samples. Sample and courier costs are confirmed based on destination."],
-  ["Which vanilla grades are available?", "We supply Gourmet Grade A, Extraction Grade B, and cut or split beans. Custom sorting by length and moisture can be discussed."],
-  ["What is the minimum order quantity?", "MOQ is available upon request and depends on grade, packaging, lot availability, and destination."],
-  ["Can you provide private-label packaging?", "Yes. We can support buyer labels, carton markings, inner pack sizes, and other export packaging requirements."],
-  ["Which export documents are provided?", "Commercial Invoice and Packing List are standard. Certificate of Origin, Phytosanitary, Fumigation, and other documents are arranged where required."],
-  ["How long does an order take?", "Lead time is confirmed with the quotation and depends on lot availability, volume, packaging, and documentation."],
-];
-
 export function VanillaExportPage({ catalog = [], faqItems = [], documentNames = [] }: { catalog?:Product[];faqItems?:ProductFaq[];documentNames?:string[] }) {
   const company = useCompanySettings();
   const primary = catalog.find((product)=>product.slug === "grade-a-vanilla-beans") ?? catalog[0];
   const specs = primary?.specifications.length ? primary.specifications.map((item)=>[item.label,item.value]) : defaultSpecs;
   const grades = catalog.length ? catalog.slice(0,4).map((product)=>[product.name,product.typicalLength,product.moisture,product.application]) : defaultGrades;
-  const faqs = faqItems.length ? faqItems.map((item)=>[item.question,item.answer]) : defaultFaqs;
+  const faqs = (faqItems.length ? faqItems : defaultBuyerFaqs).map((item)=>[item.question,item.answer]);
   const documents = documentNames.length ? documentNames : ["Certificate of Origin","Phytosanitary Certificate","Commercial Invoice","Packing List","Fumigation Certificate"];
   const gallery = catalog.length ? catalog.slice(0,3).map((product)=>({src:product.image,alt:product.name})) : [{src:"/vanilla-grade-a.webp",alt:"Whole premium Indonesian vanilla beans"},{src:"/vanilla-grade-b.webp",alt:"Extraction-grade Indonesian vanilla beans"},{src:"/vanilla-cuts.webp",alt:"Indonesian vanilla cuts for extraction"}];
   const whatsapp = `https://wa.me/${company.whatsapp_number.replace(/\D/g, "")}?text=` + encodeURIComponent(`Hello ${company.brand_name}, I am interested in Indonesian vanilla beans. Please send your export price list and available grades.`);

@@ -29,7 +29,7 @@ export default async function ContentAdminPage({ searchParams }: { searchParams:
       {entries.length ? <div className="admin-content-rows">{entries.map((entry)=><article key={entry.id} className="admin-content-row">
         {entry.featured_image_url ? <Image src={entry.featured_image_url} alt="" width={68} height={54} unoptimized /> : <span className="admin-content-row-icon"><FileText size={20} /></span>}
         <div><b>{entry.title}</b><p>{entry.excerpt || `/${entry.slug}`}</p><small>Diperbarui {new Date(entry.updated_at).toLocaleDateString("id-ID")}</small></div>
-        <span className={`admin-badge ${entry.status}`}>{entry.status === "published" ? "Terbit" : entry.status === "draft" ? "Draft" : "Arsip"}</span>
+        <span className={`admin-badge ${entry.status}`}>{entry.status === "published" ? "Terbit" : entry.status === "draft" ? (collection === "testimonial" ? "Menunggu review" : "Draft") : "Arsip"}</span>
         <Link className="admin-secondary-button" href={`/admin/content/${entry.id}/edit`}><Pencil size={13} /> Edit</Link>
       </article>)}</div> : <div className="admin-empty"><FileText size={25} /><h3>Belum ada {cmsCollectionLabels[collection]}</h3><p>Klik tombol Tambah untuk membuat konten pertama.</p></div>}
       <AdminPagination basePath="/admin/content" page={page} pageCount={pageCount} params={{collection}} />

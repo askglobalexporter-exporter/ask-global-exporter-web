@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Header } from "./Header";
 import { BrandLogo } from "./BrandLogo";
-import { products as fallbackProducts, type Product } from "@/data/products";
+import { defaultBuyerFaqs, products as fallbackProducts, type Product } from "@/data/products";
 import type { CmsEntry, HomepageHeroSlide, HomepageSection } from "@/lib/public-content";
 import { useCompanySettings } from "./CompanySettingsProvider";
 import { resolvedHomepageContent } from "@/lib/homepage-sections";
@@ -44,6 +44,9 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
   const about = content?.about.find((entry)=>entry.slug === "company-overview") ?? content?.about[0];
   const promise = content?.companyProfile.find((entry)=>entry.slug === "company-principle") ?? content?.companyProfile[0];
   const documents = content?.exportDocuments.length ? content.exportDocuments : ["Commercial Invoice", "Packing List", "Certificate of Origin", "Phytosanitary", "Fumigation", "Specification Sheet"].map((title,index)=>({id:String(index),title,excerpt:"Subject to shipment requirements"} as CmsEntry));
+  const buyerFaqs = content?.faqs.length
+    ? content.faqs.map((entry)=>({ id:entry.id, question:entry.content?.question || entry.title, answer:entry.content?.answer || entry.content?.body || entry.excerpt || "" }))
+    : defaultBuyerFaqs.map((item,index)=>({ id:`default-faq-${index}`, ...item }));
   return (
     <main style={{ display: "flex", flexDirection: "column" }}>
       <Header />
@@ -155,15 +158,15 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
         </div>
       </section>}
 
-      {visible("testimonials") && Boolean(content?.testimonials.length) && <section className="home-cms-section section shell" style={order("testimonials")}>
+      {Boolean(content?.testimonials.length) && <section className="home-cms-section section shell" style={order("testimonials")}>
         <motion.div {...reveal} className="section-label">06 / Buyer confidence</motion.div>
         <motion.div {...reveal} className="section-heading"><h2>{section("testimonials").title || "Partnerships built on reliable execution."}</h2><p>{section("testimonials").summary || "Selected feedback from buyers and commercial partners."}</p></motion.div>
         <div className="testimonial-grid">{content!.testimonials.slice(0,3).map((entry)=><motion.blockquote {...reveal} key={entry.id}><Quote size={24}/><p>{entry.content?.body || entry.excerpt}</p><footer><b>{entry.content?.author || entry.title}</b><span>{[entry.content?.role,entry.content?.company].filter(Boolean).join(" · ")}</span></footer></motion.blockquote>)}</div>
       </section>}
 
-      {visible("faq") && Boolean(content?.faqs.length) && <section className="home-cms-section home-faq section shell" style={order("faq")}>
+      {visible("faq") && buyerFaqs.length > 0 && <section className="home-cms-section home-faq section shell" style={order("faq")}>
         <motion.div {...reveal} className="section-label">07 / Buyer FAQ</motion.div>
-        <div className="faq-grid"><motion.h2 {...reveal}>{section("faq").title || "Questions global buyers ask before sourcing."}</motion.h2><div>{content!.faqs.map((entry)=><motion.details {...reveal} key={entry.id}><summary>{entry.content?.question || entry.title}<span>+</span></summary><p>{entry.content?.answer || entry.content?.body || entry.excerpt}</p></motion.details>)}</div></div>
+        <div className="faq-grid"><motion.h2 {...reveal}>{section("faq").title || "Questions global buyers ask before sourcing."}</motion.h2><div>{buyerFaqs.map((item)=><motion.details {...reveal} key={item.id}><summary>{item.question}<span>+</span></summary><p>{item.answer}</p></motion.details>)}</div></div>
       </section>}
 
       {visible("blog") && Boolean(content?.blog.length) && <section className="home-cms-section home-blog section shell" style={order("blog")}>

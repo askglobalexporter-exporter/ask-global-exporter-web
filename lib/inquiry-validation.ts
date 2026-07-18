@@ -23,5 +23,16 @@ export const sampleSchema = z.object({
   turnstileToken: optionalText(2048),
 });
 
+export const testimonialSchema = z.object({
+  name: requiredText("Name", 100),
+  company: requiredText("Company", 120),
+  role: optionalText(100),
+  testimonial: requiredText("Testimonial", 1200).refine((value) => value.length >= 20, "Please share at least 20 characters"),
+  consent: z.boolean().refine(Boolean, "Consent is required"),
+  website: optionalText(100),
+  turnstileToken: optionalText(2048),
+});
+
 export type QuotationInput = z.infer<typeof quotationSchema>;
 export type SampleInput = z.infer<typeof sampleSchema>;
+export type TestimonialInput = z.infer<typeof testimonialSchema>;
