@@ -46,10 +46,10 @@ export function HomePage({ catalog = fallbackProducts, heroSlides = [], sectionC
   const documents = content?.exportDocuments.length ? content.exportDocuments : ["Commercial Invoice", "Packing List", "Certificate of Origin", "Phytosanitary", "Fumigation", "Specification Sheet"].map((title,index)=>({id:String(index),title,excerpt:"Subject to shipment requirements"} as CmsEntry));
   return (
     <main style={{ display: "flex", flexDirection: "column" }}>
+      <Header />
       {visible("hero") && <section className="hero" ref={hero} style={{...order("hero"),"--hero-image":`url("${activeSlide.image_url}")`,"--hero-mobile-image":`url("${activeSlide.mobile_image_url || activeSlide.image_url}")`,"--hero-desktop-position":activeSlide.desktop_position,"--hero-mobile-position":activeSlide.mobile_position} as CSSProperties}>
         <AnimatePresence initial={false}><motion.div key={activeSlide.id} className="hero-image" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:.7}} style={{ y: heroY, scale: heroScale, backgroundImage:`url("${activeSlide.image_url}")` }} /></AnimatePresence>
         <div className="hero-shade" />
-        <Header />
         <AnimatePresence mode="wait"><motion.div key={activeSlide.id} className="mobile-hero-copy shell" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{opacity:0,y:-12}} transition={{ duration: .55, ease }}>
           <div className="eyebrow"><span /> {activeSlide.eyebrow}</div>
           <h1>{activeSlide.title}</h1>
