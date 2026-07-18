@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { ChangeEvent, useEffect, useId, useState, useTransition } from "react";
-import { ArrowLeft, ArrowRight, ImagePlus, LoaderCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImagePlus, Images, LoaderCircle, Trash2 } from "lucide-react";
 import { upload as uploadToImageKit } from "@imagekit/next";
 import { registerMediaAssetAction } from "@/app/admin/actions";
+import { MediaLibraryPicker } from "./MediaLibraryPicker";
 
 type UploadAuth = {
   token: string;
@@ -111,6 +112,7 @@ export function ImageUploadField({
   const initial = Array.isArray(defaultValue) ? defaultValue : defaultValue ? [defaultValue] : [];
   const [urls, setUrls] = useState(initial.filter(Boolean));
   const [message, setMessage] = useState("");
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -184,6 +186,7 @@ export function ImageUploadField({
       </div>)}
     </div>}
     <div className="admin-image-upload-controls">
+      <button type="button" className="admin-primary-button" onClick={() => setLibraryOpen(true)} disabled={pending}><Images size={15}/> Pilih dari Media Library</button>
       <label htmlFor={inputId} className="admin-secondary-button">
         {pending ? <LoaderCircle className="admin-spin" size={15} /> : <ImagePlus size={15} />}
         {pending ? "Mengunggah…" : multiple ? "Upload foto" : urls.length ? "Ganti foto" : "Upload foto"}
@@ -197,7 +200,8 @@ export function ImageUploadField({
         ? <textarea value={urls.join("\n")} onChange={(event) => setUrls(event.target.value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean))} rows={3} placeholder="Satu URL gambar per baris" />
         : <input type="url" value={urls[0] ?? ""} onChange={(event) => setUrls(event.target.value ? [event.target.value] : [])} placeholder="https://ik.imagekit.io/…" />}
     </details>
-    <small>{help || "JPG, PNG, WebP, atau AVIF · otomatis diubah ke WebP · maksimal 10 MB"}</small>
+    <small>{help || "Pilih foto yang sudah ada di Media Library, atau upload JPG, PNG, WebP, dan AVIF dari perangkat."}</small>
     {message && <p className={`admin-upload-message ${message.includes("gagal") || message.includes("belum") || message.includes("lebih besar") ? "error" : ""}`}>{message}</p>}
+    <MediaLibraryPicker open={libraryOpen} multiple={multiple} value={urls} onChange={(next)=>{setUrls(next);setMessage(next.length ? `${next.length} foto dipilih dari Media Library.` : "");}} onClose={()=>setLibraryOpen(false)}/>
   </div>;
 }

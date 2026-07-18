@@ -29,8 +29,10 @@ test("public CMS routes and safe homepage visibility policy exist", async () => 
 });
 
 test("admin image fields upload directly to ImageKit", async () => {
-  const [field, products, content, homepage, seo] = await Promise.all([
+  const [field, picker, libraryRoute, products, content, homepage, seo] = await Promise.all([
     source("components/admin/ImageUploadField.tsx"),
+    source("components/admin/MediaLibraryPicker.tsx"),
+    source("app/api/admin/media-library/route.ts"),
     source("app/admin/(panel)/products/page.tsx"),
     source("components/admin/CmsEntryEditor.tsx"),
     source("components/admin/HeroSlideEditor.tsx"),
@@ -39,6 +41,11 @@ test("admin image fields upload directly to ImageKit", async () => {
   assert.match(field, /uploadToImageKit/);
   assert.match(field, /registerMediaAssetAction/);
   assert.match(field, /type="file"/);
+  assert.match(field, /Pilih dari Media Library/);
+  assert.match(picker, /api\/admin\/media-library/);
+  assert.match(picker, /Semua folder/);
+  assert.match(libraryRoute, /roleCan\(session\.profile\.role, "media\.read"\)/);
+  assert.match(libraryRoute, /\.limit\(60\)/);
   assert.match(products, /name="gallery_images"/);
   assert.match(content, /name="featured_image_url"/);
   assert.match(homepage, /name="image_url"/);
