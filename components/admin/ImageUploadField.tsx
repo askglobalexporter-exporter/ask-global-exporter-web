@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, ImagePlus, Images, LoaderCircle, Trash2 } from "
 import { upload as uploadToImageKit } from "@imagekit/next";
 import { registerMediaAssetsAction } from "@/app/admin/actions";
 import { imageThumbnailUrl } from "@/lib/admin/media";
+import { useAdminToast } from "./AdminToast";
 
 const MediaLibraryPicker = dynamic(() => import("./MediaLibraryPicker").then((module) => module.MediaLibraryPicker), {
   loading: () => null,
@@ -116,6 +117,7 @@ export function ImageUploadField({
   const [message, setMessage] = useState("");
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const { notify } = useAdminToast();
 
   useEffect(() => {
     window.dispatchEvent(new Event("admin-preview-refresh"));
@@ -163,9 +165,11 @@ export function ImageUploadField({
         const uploaded = images.map((image)=>image.url);
         setUrls((current) => multiple ? [...current, ...uploaded] : uploaded.slice(-1));
         setMessage(`${uploaded.length} foto berhasil di-upload dan siap disimpan.`);
+        notify("success", `${uploaded.length} foto berhasil diunggah.`);
         input.value = "";
       } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Upload gagal. Silakan coba lagi.");
+        const text = error instanceof Error ? error.message : "Upload gagal. Silakan coba lagi.";
+        setMessage(text); notify("error", text);
       }
     });
   }

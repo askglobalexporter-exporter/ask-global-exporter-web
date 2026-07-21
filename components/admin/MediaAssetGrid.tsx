@@ -5,11 +5,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Image as ImageIcon, LoaderCircle, Trash2 } from "lucide-react";
 import { deleteMediaAssetMutation } from "@/app/admin/actions";
 import { imageThumbnailUrl } from "@/lib/admin/media";
+import { useAdminToast } from "./AdminToast";
 
 export type MediaAsset = { id:string;filename:string;storage_path:string;public_url:string;mime_type:string;size_bytes:number;width:number|null;height:number|null;alt_text:string|null;created_at:string;provider:string;provider_file_id:string|null };
 
 export function MediaAssetGrid({ assets, queryKey }: { assets:MediaAsset[];queryKey:string }) {
   const client = useQueryClient();
+  const { notify } = useAdminToast();
   const { data = assets } = useQuery({ queryKey:["admin-media-page", queryKey], queryFn:async()=>assets, initialData:assets, staleTime:Infinity });
   const deletion = useMutation({
     mutationFn:deleteMediaAssetMutation,
@@ -19,7 +21,8 @@ export function MediaAssetGrid({ assets, queryKey }: { assets:MediaAsset[];query
       client.setQueryData<MediaAsset[]>(["admin-media-page", queryKey], (current=[])=>current.filter((asset)=>asset.id !== variables.id));
       return { previous };
     },
-    onError:(_error, _variables, context)=>client.setQueryData(["admin-media-page", queryKey], context?.previous ?? assets),
+    onError:(error, _variables, context)=>{ client.setQueryData(["admin-media-page", queryKey], context?.previous ?? assets); notify("error", error instanceof Error ? error.message : "Media gagal dihapus."); },
+    onSuccess:()=>notify("success", "Media berhasil dihapus."),
   });
 
   if (!data.length) return <div className="admin-card admin-empty" style={{ marginTop:18 }}><ImageIcon/><h3>Media tidak ditemukan</h3><p>Upload gambar baru atau pilih folder lain.</p></div>;

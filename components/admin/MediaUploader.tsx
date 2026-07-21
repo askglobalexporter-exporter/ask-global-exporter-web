@@ -4,6 +4,7 @@ import { ChangeEvent, useState, useTransition } from "react";
 import { ImageUp, LoaderCircle } from "lucide-react";
 import { upload as uploadToImageKit } from "@imagekit/next";
 import { registerMediaAssetsAction } from "@/app/admin/actions";
+import { useAdminToast } from "./AdminToast";
 
 async function compressToWebP(file: File) {
   if (!file.type.startsWith("image/") || file.type === "image/gif") {
@@ -48,6 +49,7 @@ export function MediaUploader({ folders, defaultFolder = "" }: { folders: Array<
   const [folder, setFolder] = useState(defaultFolder);
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
+  const { notify } = useAdminToast();
 
   async function upload(event: ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget;
@@ -98,9 +100,11 @@ export function MediaUploader({ folders, defaultFolder = "" }: { folders: Array<
         }));
         await registerMediaAssetsAction(uploads);
         setMessage(`${files.length} file${files.length > 1 ? "s" : ""} uploaded to ImageKit and optimized.`);
+        notify("success", `${files.length} file berhasil diunggah dan dioptimalkan.`);
         input.value = "";
       } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Upload failed.");
+        const text = error instanceof Error ? error.message : "Upload gagal.";
+        setMessage(text); notify("error", text);
       }
     });
   }

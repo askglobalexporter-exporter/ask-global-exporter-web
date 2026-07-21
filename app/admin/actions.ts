@@ -279,7 +279,7 @@ export async function deleteHeroSlideAction(formData: FormData) {
   await writeAudit("hero_slide.deleted", "homepage_hero_slide", id);
   revalidatePath("/admin/sections/hero");
   revalidatePath("/");
-  redirect("/admin/sections/hero");
+  redirect("/admin/sections/hero?notice=slide-deleted");
 }
 
 export async function saveCompanySettingsAction(formData: FormData) {

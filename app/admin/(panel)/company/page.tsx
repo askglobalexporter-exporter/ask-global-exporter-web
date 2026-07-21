@@ -3,6 +3,7 @@ import { saveCompanySettingsAction } from "@/app/admin/actions";
 import { AdminLivePreview } from "@/components/admin/AdminLivePreview";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { AdminActionForm } from "@/components/admin/AdminActionForm";
 import { requireAdmin } from "@/lib/admin/auth";
 import { defaultCompanySettings, type CompanySettings } from "@/lib/public-content";
 
@@ -15,7 +16,7 @@ export default async function CompanySettingsPage() {
 
   return <>
     <div className="admin-page-head"><div><h1>Identitas perusahaan</h1><p>Kelola informasi utama yang tampil di header, kontak, footer, WhatsApp, dan metadata website.</p></div></div>
-    <form action={saveCompanySettingsAction} className="admin-form admin-editor-with-preview">
+    <AdminActionForm action={saveCompanySettingsAction} successMessage="Identitas perusahaan berhasil disimpan." className="admin-form admin-editor-with-preview">
       <article className="admin-card">
         <div className="admin-card-head"><div><h2><Building2 size={15}/> Informasi utama</h2><p>Isi dengan data resmi yang boleh dilihat calon pembeli.</p></div></div>
         <div className="admin-form-grid">
@@ -36,6 +37,6 @@ export default async function CompanySettingsPage() {
         <div className="admin-form-actions"><SubmitButton pendingLabel="Menyimpan…"><Save size={14}/> Simpan identitas perusahaan</SubmitButton></div>
       </article>
       <aside><AdminLivePreview kind="company" label="Preview identitas perusahaan" /></aside>
-    </form>
+    </AdminActionForm>
   </>;
 }

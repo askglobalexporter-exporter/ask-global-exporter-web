@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, GripVertical, LoaderCircle, Pencil, Save } from "lucide-react";
 import { saveHomepageSectionsAction } from "@/app/admin/actions";
 import { homepageSectionGuidance } from "@/lib/homepage-sections";
+import { useAdminToast } from "./AdminToast";
 
 type Content = { title?:string;eyebrow?:string;summary?:string;body?:string;cta_label?:string;cta_url?:string;image_url?:string };
 type Section = { id:string;section_key:string;label:string;section_type:string;position:number;is_visible:boolean;content?:Content };
@@ -14,6 +15,7 @@ export function HomepageBuilder({ initialSections }: { initialSections: Section[
   const [dragged, setDragged] = useState<number | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
+  const { notify } = useAdminToast();
 
   function move(from: number, to: number) {
     if (to < 0 || to >= sections.length) return;
@@ -32,7 +34,7 @@ export function HomepageBuilder({ initialSections }: { initialSections: Section[
   function save() {
     const form = new FormData();
     form.set("sections", JSON.stringify(sections.map((item, position) => ({ id:item.id,position,is_visible:item.is_visible }))));
-    startTransition(async () => { await saveHomepageSectionsAction(form); setSaved(true); });
+    startTransition(async () => { try { await saveHomepageSectionsAction(form); setSaved(true); notify("success", "Susunan homepage berhasil disimpan."); } catch (error) { notify("error", error instanceof Error ? error.message : "Susunan homepage gagal disimpan."); } });
   }
 
   return <>

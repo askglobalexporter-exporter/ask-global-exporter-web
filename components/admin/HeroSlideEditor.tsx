@@ -3,10 +3,11 @@ import { saveHeroSlideAction } from "@/app/admin/actions";
 import { AdminLivePreview } from "./AdminLivePreview";
 import { ImageUploadField } from "./ImageUploadField";
 import { SubmitButton } from "./SubmitButton";
+import { AdminActionForm } from "./AdminActionForm";
 import type { HomepageHeroSlide } from "@/lib/public-content";
 
 export function HeroSlideEditor({ slide }: { slide?:HomepageHeroSlide }) {
-  return <form action={saveHeroSlideAction} className="admin-form admin-editor-with-preview">
+  return <AdminActionForm action={saveHeroSlideAction} successMessage={slide ? "Perubahan slide berhasil disimpan." : "Slide baru berhasil dibuat."} className="admin-form admin-editor-with-preview">
     <article className="admin-card admin-editor-fields">
       <input type="hidden" name="id" value={slide?.id ?? ""}/><input type="hidden" name="section_key" value="hero"/>
       <div className="admin-card-head"><div><h2>{slide ? "Edit slide" : "Tambah slide baru"}</h2><p>Isi teks dan foto seperti yang akan dilihat pengunjung.</p></div></div>
@@ -26,5 +27,5 @@ export function HeroSlideEditor({ slide }: { slide?:HomepageHeroSlide }) {
       <div className="admin-form-actions"><SubmitButton pendingLabel="Menyimpan…"><Save size={14}/> {slide ? "Simpan perubahan" : "Simpan slide baru"}</SubmitButton></div>
     </article>
     <aside className="admin-card admin-editor-preview"><AdminLivePreview kind="homepage" label="Live preview hero"/></aside>
-  </form>;
+  </AdminActionForm>;
 }

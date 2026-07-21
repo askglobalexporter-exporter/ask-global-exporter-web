@@ -3,6 +3,7 @@ import { Save } from "lucide-react";
 import { saveHomepageSectionContentAction } from "@/app/admin/actions";
 import { AdminLivePreview } from "./AdminLivePreview";
 import { SubmitButton } from "./SubmitButton";
+import { AdminActionForm } from "./AdminActionForm";
 import { homepageSectionGuidance, resolvedHomepageContent, type HomepageEditableContent } from "@/lib/homepage-sections";
 
 const fieldLabels: Record<keyof HomepageEditableContent, { label:string; type:"input"|"textarea" }> = {
@@ -18,7 +19,7 @@ const fieldLabels: Record<keyof HomepageEditableContent, { label:string; type:"i
 export function HomepageSectionEditor({ section }: { section:{id:string;section_key:string;content?:HomepageEditableContent} }) {
   const guidance = homepageSectionGuidance[section.section_key];
   const content = resolvedHomepageContent(section.section_key, section.content);
-  return <form action={saveHomepageSectionContentAction} className="admin-form admin-editor-with-preview">
+  return <AdminActionForm action={saveHomepageSectionContentAction} successMessage="Section homepage berhasil diperbarui." className="admin-form admin-editor-with-preview">
     <article className="admin-card admin-editor-fields">
       <input type="hidden" name="id" value={section.id}/><input type="hidden" name="section_key" value={section.section_key}/><input type="hidden" name="redirect_to" value={`/admin/sections/${section.section_key}?saved=1`}/>
       <div className="admin-card-head"><div><h2>Konten yang sedang tayang</h2><p>Nilai saat ini sudah terisi. Ubah hanya teks yang ingin dikoreksi.</p></div></div>
@@ -30,5 +31,5 @@ export function HomepageSectionEditor({ section }: { section:{id:string;section_
       <div className="admin-form-actions"><SubmitButton pendingLabel="Menyimpan…"><Save size={14}/> Simpan perubahan section</SubmitButton></div>
     </article>
     <aside className="admin-card admin-editor-preview"><AdminLivePreview kind="homepage" label="Preview seperti halaman publik"/></aside>
-  </form>;
+  </AdminActionForm>;
 }

@@ -4,6 +4,7 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { deleteCmsEntryAction } from "@/app/admin/actions";
 import { CmsEntryEditor, type CmsEditorEntry } from "@/components/admin/CmsEntryEditor";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { AdminActionForm } from "@/components/admin/AdminActionForm";
 import { requireAdmin } from "@/lib/admin/auth";
 import { allowedCmsCollections, cmsCollectionLabels, isCmsCollection } from "@/lib/admin/cms";
 
@@ -20,6 +21,6 @@ export default async function EditContentPage({ params, searchParams }: { params
     <Link className="admin-back-link" href={`/admin/content?collection=${entry.collection}`}><ArrowLeft size={14} /> Kembali ke daftar</Link>
     <div className="admin-page-head"><div><h1>Edit: {entry.title}</h1><p>Semua teks dan foto yang tersimpan sudah dimuat. Ubah bagian yang diperlukan saja.</p></div>{query.saved && <span className="admin-toast">Perubahan berhasil disimpan</span>}</div>
     <CmsEntryEditor collection={entry.collection as keyof typeof cmsCollectionLabels} entry={entry} mode="edit" />
-    <form action={deleteCmsEntryAction} className="admin-delete-zone"><input type="hidden" name="id" value={entry.id}/><input type="hidden" name="collection" value={entry.collection}/><input type="hidden" name="redirect_to" value={`/admin/content?collection=${entry.collection}`}/><div><b>Hapus konten</b><p>Gunakan hanya jika konten ini benar-benar tidak diperlukan.</p></div><SubmitButton className="admin-danger-button" pendingLabel="Menghapus…"><Trash2 size={13}/> Hapus</SubmitButton></form>
+    <AdminActionForm action={deleteCmsEntryAction} successMessage="Konten berhasil dihapus." pendingMessage="Menghapus konten…" className="admin-delete-zone"><input type="hidden" name="id" value={entry.id}/><input type="hidden" name="collection" value={entry.collection}/><input type="hidden" name="redirect_to" value={`/admin/content?collection=${entry.collection}&notice=content-deleted`}/><div><b>Hapus konten</b><p>Gunakan hanya jika konten ini benar-benar tidak diperlukan.</p></div><SubmitButton className="admin-danger-button" pendingLabel="Menghapus…"><Trash2 size={13}/> Hapus</SubmitButton></AdminActionForm>
   </>;
 }

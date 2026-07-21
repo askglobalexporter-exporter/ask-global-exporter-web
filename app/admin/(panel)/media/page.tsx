@@ -4,6 +4,7 @@ import { createMediaFolderAction } from "@/app/admin/actions";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import { MediaAssetGrid, type MediaAsset } from "@/components/admin/MediaAssetGrid";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { AdminActionForm } from "@/components/admin/AdminActionForm";
 import { requireAdmin } from "@/lib/admin/auth";
 
 export const metadata = { title:"Koleksi Media" };
@@ -43,7 +44,7 @@ export default async function MediaPage({ searchParams }: { searchParams:Promise
   const pageCount = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
 
   return <>
-    <div className="admin-page-head"><div><h1>Koleksi Media</h1><p>Folder disusun seperti File Explorer. Buka folder untuk melihat dan mengunggah file di dalamnya.</p></div><form action={createMediaFolderAction} className="admin-inline-form"><input type="hidden" name="parent_id" value={currentFolder?.id ?? ""}/><input name="name" placeholder={currentFolder ? `Folder baru di ${currentFolder.name}` : "Nama folder baru"} required/><button><FolderPlus size={14}/> Buat folder</button></form></div>
+    <div className="admin-page-head"><div><h1>Koleksi Media</h1><p>Folder disusun seperti File Explorer. Buka folder untuk melihat dan mengunggah file di dalamnya.</p></div><AdminActionForm action={createMediaFolderAction} successMessage="Folder baru berhasil dibuat." className="admin-inline-form"><input type="hidden" name="parent_id" value={currentFolder?.id ?? ""}/><input name="name" placeholder={currentFolder ? `Folder baru di ${currentFolder.name}` : "Nama folder baru"} required/><button><FolderPlus size={14}/> Buat folder</button></AdminActionForm></div>
     <nav className="admin-media-breadcrumb" aria-label="Lokasi folder"><Link href="/admin/media"><House size={14}/> Media</Link>{trail.map((folder)=><span key={folder.id}><ChevronRight size={13}/><Link href={`/admin/media?folder=${folder.id}`}>{folder.name}</Link></span>)}{params.view === "all" && <span><ChevronRight size={13}/>Semua file</span>}</nav>
     <article className="admin-card"><MediaUploader folders={folders.map((folder)=>({ ...folder, path:folderPath(folders, folder) }))} defaultFolder={currentFolder?.id ?? ""}/></article>
     <div className="admin-media-toolbar"><h2>{params.view === "all" ? "Semua file" : currentFolder?.name ?? "Media"}</h2><Link className={params.view === "all" ? "active" : ""} href="/admin/media?view=all">Lihat semua file</Link></div>

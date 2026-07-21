@@ -3,6 +3,7 @@ import { saveCmsEntryAction } from "@/app/admin/actions";
 import { AdminLivePreview } from "./AdminLivePreview";
 import { ImageUploadField } from "./ImageUploadField";
 import { SubmitButton } from "./SubmitButton";
+import { AdminActionForm } from "./AdminActionForm";
 import { cmsCollectionLabels, type CmsCollection } from "@/lib/admin/cms";
 
 export type CmsEditorEntry = {
@@ -28,7 +29,7 @@ const labels: Record<CmsCollection, { title:string; excerpt:string; body:string;
 export function CmsEntryEditor({ collection, entry, mode }: { collection: CmsCollection; entry?: CmsEditorEntry; mode: "create" | "edit" }) {
   const field = labels[collection];
   const redirectTo = mode === "create" ? "/admin/content/:id/edit?saved=created" : `/admin/content/${entry!.id}/edit?saved=updated`;
-  return <form action={saveCmsEntryAction} className="admin-form admin-editor-with-preview">
+  return <AdminActionForm action={saveCmsEntryAction} successMessage={mode === "create" ? "Konten baru berhasil dibuat." : "Perubahan konten berhasil disimpan."} className="admin-form admin-editor-with-preview">
     <div className="admin-card admin-editor-fields">
       <input type="hidden" name="id" value={entry?.id ?? ""} />
       <input type="hidden" name="collection" value={collection} />
@@ -47,5 +48,5 @@ export function CmsEntryEditor({ collection, entry, mode }: { collection: CmsCol
       <div className="admin-form-actions"><SubmitButton pendingLabel="Menyimpan…"><Save size={14} /> {mode === "create" ? "Simpan konten baru" : "Simpan perubahan"}</SubmitButton></div>
     </div>
     <aside className="admin-card admin-editor-preview"><AdminLivePreview kind="content" label="Preview tampilan publik" /></aside>
-  </form>;
+  </AdminActionForm>;
 }
