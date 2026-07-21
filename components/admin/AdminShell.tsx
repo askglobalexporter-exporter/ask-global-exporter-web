@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { signOutAction } from "@/app/admin/actions";
 import { roleCan, roleLabel, type AdminPermission, type AdminProfile } from "@/lib/admin/types";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const navigation = [
   { href: "/admin", label: "Ringkasan", icon: LayoutDashboard, permission: "dashboard.read" },
@@ -52,7 +53,7 @@ export function AdminShell({ profile, email, children }: { profile: AdminProfile
   return (
     <div className="admin-root">
       <aside className={`admin-sidebar ${open ? "is-open" : ""}`}>
-        <div className="admin-sidebar-logo"><span className="admin-logo-mark">A</span><div><b>ASK GLOBAL</b><small>Panel Admin</small></div><button onClick={() => setOpen(false)} aria-label="Tutup menu"><X size={19} /></button></div>
+        <div className="admin-sidebar-logo"><BrandLogo compact /><small>Panel Admin</small><button onClick={() => setOpen(false)} aria-label="Tutup menu"><X size={19} /></button></div>
         <nav className="admin-nav" aria-label="Admin navigation">
           <p>Menu utama</p>
           {authorizedNavigation.map(({ href, label, icon: Icon }) => {

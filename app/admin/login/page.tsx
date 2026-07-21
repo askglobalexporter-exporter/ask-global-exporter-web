@@ -3,6 +3,7 @@ import { ShieldCheck } from "lucide-react";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { getAdminSession } from "@/lib/admin/auth";
 import { redirect } from "next/navigation";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export default async function AdminLoginPage() {
   return (
     <main className="admin-login-page">
       <section className="admin-login-brand">
-        <Link href="/" className="admin-login-logo"><span>ASK</span><small>GLOBAL</small></Link>
+        <Link href="/" className="admin-login-logo"><BrandLogo /></Link>
         <div>
           <p className="admin-kicker">Enterprise workspace</p>
           <h1>Trade operations,<br />under control.</h1>
