@@ -1,0 +1,33 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { KeyRound, LoaderCircle, Trash2 } from "lucide-react";
+import { deleteAdminMutation, resendAdminPasswordMutation } from "@/app/admin/actions";
+
+export function AdminMemberActions({ userId, fullName, isCurrentUser }: { userId:string;fullName:string;isCurrentUser:boolean }) {
+  const [pending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+
+  function resend() {
+    setMessage("");
+    startTransition(async () => {
+      try { await resendAdminPasswordMutation({ userId }); setMessage("Link pembuatan password telah dikirim ulang."); }
+      catch (error) { setMessage(error instanceof Error ? error.message : "Link gagal dikirim."); }
+    });
+  }
+
+  function remove() {
+    if (!window.confirm(`Hapus administrator ${fullName}? Akses loginnya akan dicabut permanen.`)) return;
+    setMessage("");
+    startTransition(async () => {
+      try { await deleteAdminMutation({ userId }); }
+      catch (error) { setMessage(error instanceof Error ? error.message : "Administrator gagal dihapus."); }
+    });
+  }
+
+  return <div className="admin-member-actions">
+    <button type="button" className="admin-secondary-button" disabled={pending} onClick={resend}>{pending ? <LoaderCircle className="admin-spin" size={14}/> : <KeyRound size={14}/>} Kirim link password</button>
+    <button type="button" className="admin-danger-button" disabled={pending || isCurrentUser} title={isCurrentUser ? "Akun yang sedang digunakan tidak dapat dihapus" : undefined} onClick={remove}><Trash2 size={14}/> Hapus admin</button>
+    {message && <p className="admin-member-message">{message}</p>}
+  </div>;
+}

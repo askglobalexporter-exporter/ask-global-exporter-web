@@ -44,8 +44,8 @@ function safeFolderName(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9_-]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-export function MediaUploader({ folders }: { folders: Array<{ id: string; name: string }> }) {
-  const [folder, setFolder] = useState("");
+export function MediaUploader({ folders, defaultFolder = "" }: { folders: Array<{ id:string;name:string;path?:string }>;defaultFolder?:string }) {
+  const [folder, setFolder] = useState(defaultFolder);
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
 
@@ -71,7 +71,7 @@ export function MediaUploader({ folders }: { folders: Array<{ id: string; name: 
           const result = await uploadToImageKit({
             file: converted.blob,
             fileName: safe,
-            folder: `/ask-global/${selectedFolder ? safeFolderName(selectedFolder.name) : "library"}`,
+            folder: `/ask-global/${selectedFolder ? (selectedFolder.path ?? selectedFolder.name).split(" / ").map(safeFolderName).join("/") : "library"}`,
             token: auth.token,
             expire: auth.expire,
             signature: auth.signature,
@@ -114,7 +114,7 @@ export function MediaUploader({ folders }: { folders: Array<{ id: string; name: 
     </label>
     <select aria-label="Destination folder" value={folder} onChange={(event) => setFolder(event.target.value)} style={{ marginTop: 15, border: "1px solid #dce1df", borderRadius: 7, padding: 8, fontSize: 10 }}>
       <option value="">Root folder</option>
-      {folders.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+      {folders.map((item) => <option key={item.id} value={item.id}>{item.path ?? item.name}</option>)}
     </select>
     {message && <p className="admin-toast" style={{ marginTop: 12 }}>{message}</p>}
   </div>;

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseAdmin } from "@/lib/inquiry-server";
@@ -13,6 +14,15 @@ export type PasswordState = { error?: string; success?: string };
 const text = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 const checked = (formData: FormData, key: string) => formData.get(key) === "on" || formData.get(key) === "true";
 const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+async function adminCallbackUrl() {
+  const requestHeaders = await headers();
+  const origin = requestHeaders.get("origin");
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
+  const baseUrl = origin ?? (host ? `${protocol}://${host}` : process.env.NEXT_PUBLIC_SITE_URL ?? "https://askglobalexport.com");
+  return `${baseUrl.replace(/\/$/, "")}/admin/auth/callback?next=/admin/update-password`;
+}
 
 function list(value: string) {
   return value.split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean);
@@ -62,8 +72,7 @@ export async function requestPasswordResetAction(_: PasswordState, formData: For
   const email = text(formData, "email").toLowerCase();
   if (!email) return { error: "Enter your administrator email." };
   const supabase = await createSupabaseServerClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.askglobalexport.com";
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${siteUrl}/admin/auth/callback?next=/admin/update-password` });
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: await adminCallbackUrl() });
   if (error) return { error: "We could not send a password link. Please contact your Super Admin." };
   return { success: "Check your inbox for a secure password setup link." };
 }
@@ -323,8 +332,13 @@ export async function updateInquiryStatusMutation({ type, id, status }: { type:"
 export async function createMediaFolderAction(formData: FormData) {
   const { user, supabase } = await requireAdmin("media.write");
   const name = text(formData, "name");
+  const parentId = text(formData, "parent_id") || null;
   if (!name) return;
-  const { error } = await supabase.from("media_folders").insert({ name, created_by: user.id });
+  let duplicateQuery = supabase.from("media_folders").select("id").ilike("name", name);
+  duplicateQuery = parentId ? duplicateQuery.eq("parent_id", parentId) : duplicateQuery.is("parent_id", null);
+  const { data: duplicate } = await duplicateQuery.maybeSingle();
+  if (duplicate) throw new Error("Nama folder sudah digunakan di lokasi ini.");
+  const { error } = await supabase.from("media_folders").insert({ name, parent_id: parentId, created_by: user.id });
   if (error) throw new Error(error.message);
   revalidatePath("/admin/media");
 }
@@ -383,10 +397,10 @@ export async function inviteAdminAction(formData: FormData) {
   const email = text(formData, "email").toLowerCase();
   const fullName = text(formData, "full_name");
   const role = text(formData, "role") as AdminRole;
+  if (!["super_admin", "marketing", "content_editor"].includes(role)) throw new Error("Role administrator tidak valid.");
   const admin = getSupabaseAdmin();
   if (!admin) throw new Error("Server administration key is not configured.");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.askglobalexport.com";
-  const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: fullName }, redirectTo: `${siteUrl}/admin/auth/callback?next=/admin/update-password` });
+  const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: fullName }, redirectTo: await adminCallbackUrl() });
   if (error) throw new Error(error.message);
   if (data.user) await admin.from("admin_profiles").upsert({ user_id: data.user.id, full_name: fullName, role, is_active: true });
   await writeAudit("admin.invited", "admin_profile", data.user?.id, { email, role });
@@ -396,11 +410,51 @@ export async function inviteAdminAction(formData: FormData) {
 export async function updateAdminRoleAction(formData: FormData) {
   const { user } = await requireAdmin("team.write");
   const userId = text(formData, "user_id");
-  if (userId === user.id && !checked(formData, "is_active")) throw new Error("You cannot deactivate your own account.");
+  const nextRole = text(formData, "role") as AdminRole;
+  const nextActive = checked(formData, "is_active");
+  if (!["super_admin", "marketing", "content_editor"].includes(nextRole)) throw new Error("Role administrator tidak valid.");
+  if (userId === user.id && !nextActive) throw new Error("You cannot deactivate your own account.");
   const admin = getSupabaseAdmin();
   if (!admin) throw new Error("Server administration key is not configured.");
-  const { error } = await admin.from("admin_profiles").update({ role: text(formData, "role"), is_active: checked(formData, "is_active"), updated_at: new Date().toISOString() }).eq("user_id", userId);
+  const { data:current } = await admin.from("admin_profiles").select("role,is_active").eq("user_id", userId).maybeSingle();
+  if (current?.role === "super_admin" && current.is_active && (nextRole !== "super_admin" || !nextActive)) {
+    const { count } = await admin.from("admin_profiles").select("user_id", { count:"exact", head:true }).eq("role", "super_admin").eq("is_active", true);
+    if ((count ?? 0) <= 1) throw new Error("Super Admin terakhir harus tetap aktif dengan role Super Admin.");
+  }
+  const { error } = await admin.from("admin_profiles").update({ role:nextRole, is_active:nextActive, updated_at: new Date().toISOString() }).eq("user_id", userId);
   if (error) throw new Error(error.message);
   await writeAudit("admin.updated", "admin_profile", userId);
   revalidatePath("/admin/team");
+}
+
+export async function resendAdminPasswordMutation({ userId }: { userId:string }) {
+  await requireAdmin("team.write");
+  const admin = getSupabaseAdmin();
+  if (!admin) throw new Error("Server administration key is not configured.");
+  const { data, error:userError } = await admin.auth.admin.getUserById(userId);
+  const email = data.user?.email;
+  if (userError || !email) throw new Error("Email administrator tidak ditemukan.");
+  const { error } = await admin.auth.resetPasswordForEmail(email, { redirectTo: await adminCallbackUrl() });
+  if (error) throw new Error(error.message);
+  await writeAudit("admin.password_link_resent", "admin_profile", userId, { email });
+  return { sent:true };
+}
+
+export async function deleteAdminMutation({ userId }: { userId:string }) {
+  const { user } = await requireAdmin("team.write");
+  if (userId === user.id) throw new Error("Akun yang sedang digunakan tidak dapat dihapus.");
+  const admin = getSupabaseAdmin();
+  if (!admin) throw new Error("Server administration key is not configured.");
+  const { data:target, error:targetError } = await admin.from("admin_profiles").select("role,full_name").eq("user_id", userId).maybeSingle();
+  if (targetError || !target) throw new Error("Administrator tidak ditemukan.");
+  if (target.role === "super_admin") {
+    const { count } = await admin.from("admin_profiles").select("user_id", { count:"exact", head:true }).eq("role", "super_admin").eq("is_active", true);
+    if ((count ?? 0) <= 1) throw new Error("Super Admin terakhir tidak dapat dihapus.");
+  }
+  const { data:authUser } = await admin.auth.admin.getUserById(userId);
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  if (error) throw new Error(error.message);
+  await writeAudit("admin.deleted", "admin_profile", userId, { email:authUser.user?.email, role:target.role, fullName:target.full_name });
+  revalidatePath("/admin/team");
+  return { deleted:true };
 }

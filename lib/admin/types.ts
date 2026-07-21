@@ -29,3 +29,11 @@ export function roleCan(role: AdminRole, permission: AdminPermission) {
 export function roleLabel(role: AdminRole) {
   return { super_admin: "Super Admin", marketing: "Marketing", content_editor: "Content Editor" }[role];
 }
+
+export function roleDescription(role: AdminRole) {
+  return {
+    super_admin: "Akses penuh, termasuk pengelolaan administrator dan seluruh pengaturan.",
+    marketing: "Kelola permintaan buyer, analitik, blog, testimonial, SEO, dan media.",
+    content_editor: "Kelola produk, konten website, homepage, SEO, dan media.",
+  }[role];
+}
