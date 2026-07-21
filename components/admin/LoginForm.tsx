@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { ArrowRight, LoaderCircle, LockKeyhole } from "lucide-react";
 import { loginAction, type LoginState } from "@/app/admin/actions";
+import { PasswordInput } from "@/components/admin/PasswordInput";
 
 const initialState: LoginState = {};
 
@@ -12,7 +13,7 @@ export function LoginForm() {
   return (
     <form action={action} className="admin-login-form">
       <label><span>Work email</span><input name="email" type="email" autoComplete="email" placeholder="name@company.com" required /></label>
-      <label><span>Password</span><input name="password" type="password" autoComplete="current-password" placeholder="••••••••••••" minLength={8} required /></label>
+      <PasswordInput label="Password" name="password" autoComplete="current-password" placeholder="••••••••••••" minLength={8} />
       <Link href="/admin/forgot-password" style={{fontSize:9,color:"#53635c",textAlign:"right",marginTop:-10}}>Set or reset password</Link>
       {state.error && <p className="admin-form-error" role="alert">{state.error}</p>}
       <button className="admin-primary-button" disabled={pending}>
