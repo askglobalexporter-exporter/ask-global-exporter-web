@@ -1,68 +1,31 @@
-import Image from "next/image";
-import { FolderPlus, Image as ImageIcon, Trash2 } from "lucide-react";
-import { createMediaFolderAction, deleteMediaAssetAction } from "@/app/admin/actions";
+import { FolderPlus } from "lucide-react";
+import Link from "next/link";
+import { createMediaFolderAction } from "@/app/admin/actions";
 import { MediaUploader } from "@/components/admin/MediaUploader";
+import { MediaAssetGrid, type MediaAsset } from "@/components/admin/MediaAssetGrid";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { requireAdmin } from "@/lib/admin/auth";
 
-export const metadata = { title: "Media Library" };
+export const metadata = { title:"Media Library" };
+const PAGE_SIZE = 24;
 
-type Asset = {
-  id: string;
-  filename: string;
-  storage_path: string;
-  public_url: string;
-  mime_type: string;
-  size_bytes: number;
-  width: number | null;
-  height: number | null;
-  alt_text: string;
-  created_at: string;
-  provider: string;
-  provider_file_id: string | null;
-};
-
-export default async function MediaPage() {
+export default async function MediaPage({ searchParams }: { searchParams:Promise<{page?:string;folder?:string}> }) {
   const { supabase } = await requireAdmin("media.read");
-  const [{ data: folders }, { data: assets }] = await Promise.all([
-    supabase.from("media_folders").select("id,name").order("name"),
-    supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(100),
+  const params = await searchParams;
+  const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  let assetsQuery = supabase.from("media_assets").select("id,filename,storage_path,public_url,mime_type,size_bytes,width,height,alt_text,created_at,provider,provider_file_id", { count:"exact" }).order("created_at", { ascending:false }).range(from, from + PAGE_SIZE - 1);
+  if (params.folder) assetsQuery = assetsQuery.eq("folder_id", params.folder);
+  const [{ data:folders }, { data:assets, count }] = await Promise.all([
+    supabase.from("media_folders").select("id,name").order("name").limit(100),
+    assetsQuery,
   ]);
-
+  const pageCount = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
   return <>
-    <div className="admin-page-head">
-      <div>
-        <h1>Media Library</h1>
-        <p>Centralized ImageKit assets with automatic compression, WebP conversion, and folder organization.</p>
-      </div>
-      <form action={createMediaFolderAction} className="admin-inline-form">
-        <input name="name" placeholder="New folder" required style={{ height: 39, border: "1px solid #dce1df", borderRadius: 7, padding: "0 10px" }} />
-        <button style={{ height: 39 }}><FolderPlus size={14} /> Create folder</button>
-      </form>
-    </div>
-    <article className="admin-card"><MediaUploader folders={folders ?? []} /></article>
-    {assets?.length ? <div className="admin-media-grid">
-      {(assets as Asset[]).map((asset) => <article className="admin-media-card" key={asset.id}>
-        <div className="admin-media-image">
-          {asset.mime_type.startsWith("image/")
-            ? <Image src={asset.public_url} alt={asset.alt_text || asset.filename} fill sizes="(max-width: 560px) 50vw, 25vw" />
-            : <div className="admin-empty"><ImageIcon /></div>}
-        </div>
-        <div className="admin-media-info">
-          <b title={asset.filename}>{asset.filename}</b>
-          <small>{Math.round(asset.size_bytes / 1024)} KB{asset.width ? ` · ${asset.width}×${asset.height}` : ""}</small>
-          <form action={deleteMediaAssetAction}>
-            <input type="hidden" name="id" value={asset.id} />
-            <input type="hidden" name="storage_path" value={asset.storage_path} />
-            <input type="hidden" name="provider" value={asset.provider} />
-            <input type="hidden" name="provider_file_id" value={asset.provider_file_id ?? ""} />
-            <button><Trash2 size={11} /> Delete</button>
-          </form>
-        </div>
-      </article>)}
-    </div> : <div className="admin-card admin-empty" style={{ marginTop: 18 }}>
-      <ImageIcon />
-      <h3>Your media library is empty</h3>
-      <p>Upload product and company imagery to ImageKit to get started.</p>
-    </div>}
+    <div className="admin-page-head"><div><h1>Media Library</h1><p>Thumbnail ringan dimuat 24 per halaman; file asli tetap tersimpan di ImageKit.</p></div><form action={createMediaFolderAction} className="admin-inline-form"><input name="name" placeholder="Folder baru" required/><button><FolderPlus size={14}/> Buat folder</button></form></div>
+    <article className="admin-card"><MediaUploader folders={folders ?? []}/></article>
+    <nav className="admin-tabs" style={{marginTop:18}}><Link className={!params.folder ? "active" : ""} href="/admin/media">Semua</Link>{(folders ?? []).map((folder)=><Link className={params.folder === folder.id ? "active" : ""} key={folder.id} href={`/admin/media?folder=${folder.id}`}>{folder.name}</Link>)}</nav>
+    <MediaAssetGrid assets={(assets ?? []) as MediaAsset[]} queryKey={`${params.folder ?? "all"}:${page}`}/>
+    <AdminPagination basePath="/admin/media" page={page} pageCount={pageCount} params={{folder:params.folder ?? ""}}/>
   </>;
 }

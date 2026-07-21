@@ -4,6 +4,7 @@ import { FileText, Pencil, Plus } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/auth";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { allowedCmsCollections, cmsCollectionLabels } from "@/lib/admin/cms";
+import { imageThumbnailUrl } from "@/lib/admin/media";
 
 export const metadata = { title: "Konten Website" };
 const PAGE_SIZE = 10;
@@ -27,7 +28,7 @@ export default async function ContentAdminPage({ searchParams }: { searchParams:
     <section className="admin-card admin-content-list">
       <div className="admin-card-head"><div><h2>Daftar {cmsCollectionLabels[collection]}</h2><p>{count ?? 0} konten · klik Edit untuk mengubah konten yang sudah ada</p></div></div>
       {entries.length ? <div className="admin-content-rows">{entries.map((entry)=><article key={entry.id} className="admin-content-row">
-        {entry.featured_image_url ? <Image src={entry.featured_image_url} alt="" width={68} height={54} unoptimized /> : <span className="admin-content-row-icon"><FileText size={20} /></span>}
+        {entry.featured_image_url ? <Image src={imageThumbnailUrl(entry.featured_image_url, 136, 108)} alt="" width={68} height={54} sizes="68px" loading="lazy" /> : <span className="admin-content-row-icon"><FileText size={20} /></span>}
         <div><b>{entry.title}</b><p>{entry.excerpt || `/${entry.slug}`}</p><small>Diperbarui {new Date(entry.updated_at).toLocaleDateString("id-ID")}</small></div>
         <span className={`admin-badge ${entry.status}`}>{entry.status === "published" ? "Terbit" : entry.status === "draft" ? (collection === "testimonial" ? "Menunggu review" : "Draft") : "Arsip"}</span>
         <Link className="admin-secondary-button" href={`/admin/content/${entry.id}/edit`}><Pencil size={13} /> Edit</Link>

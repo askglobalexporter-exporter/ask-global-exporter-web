@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Eye, Mail, MapPin, MessageCircle, Monitor, Smartphone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { imageThumbnailUrl } from "@/lib/admin/media";
 
 type PreviewData = Record<string, string>;
 type PreviewKind = "product" | "content" | "homepage" | "seo" | "company";
@@ -48,15 +49,15 @@ export function AdminLivePreview({ kind, label = "Preview langsung" }: { kind: P
     <div className="admin-live-preview-head"><span><Eye size={15} /> {label}</span>{kind === "homepage" && data.section_key === "hero" ? <div className="admin-preview-device-switch"><button type="button" className={viewport === "desktop" ? "active" : ""} onClick={()=>setViewport("desktop")}><Monitor size={13}/> Desktop</button><button type="button" className={viewport === "mobile" ? "active" : ""} onClick={()=>setViewport("mobile")}><Smartphone size={13}/> Mobile</button></div> : <small>Berubah otomatis saat Anda mengetik</small>}</div>
     {kind === "seo" ? <div className="admin-seo-preview">
       <div className="admin-google-preview"><small>www.askglobalexport.com{data.route || "/"}</small><h3>{title}</h3><p>{summary}</p></div>
-      <div className="admin-social-preview">{validImage(image) && <Image src={image} alt="Preview Open Graph" fill sizes="420px" unoptimized />}<div><small>{data.route || "/"}</small><b>{title}</b><p>{summary}</p></div></div>
+      <div className="admin-social-preview">{validImage(image) && <Image src={imageThumbnailUrl(image, 840, 440)} alt="Preview Open Graph" fill sizes="(max-width: 700px) 90vw, 420px" loading="lazy" />}<div><small>{data.route || "/"}</small><b>{title}</b><p>{summary}</p></div></div>
     </div> : kind === "homepage" ? <div className={`admin-public-section-preview ${data.section_key === "hero" ? "is-hero" : ""} ${viewport === "mobile" ? "is-mobile" : ""}`} style={data.section_key === "hero" && validImage(homepageImage) ? {backgroundImage:`linear-gradient(90deg,rgba(4,24,16,.94),rgba(4,24,16,.2)),url("${homepageImage}")`,backgroundPosition:homepagePosition} : undefined}>
       <small>{data.eyebrow || "ASK GLOBAL"}</small><h3>{title}</h3><p>{summary}</p>{data.cta_label && <span>{data.cta_label}</span>}
     </div> : kind === "company" ? <div className="admin-company-preview">
-      <div className="admin-company-preview-brand">{validImage(image) ? <Image src={image} alt={title} width={145} height={54} unoptimized /> : <strong>{title}</strong>}<p>{data.tagline || "Tagline perusahaan"}</p></div>
+      <div className="admin-company-preview-brand">{validImage(image) ? <Image src={imageThumbnailUrl(image, 290, 108)} alt={title} width={145} height={54} sizes="145px" loading="lazy" /> : <strong>{title}</strong>}<p>{data.tagline || "Tagline perusahaan"}</p></div>
       <p>{summary}</p>
       <div className="admin-company-preview-contacts"><span><MessageCircle size={15}/>{data.whatsapp_display || "+62…"}</span><span><Mail size={15}/>{data.email || "email@perusahaan.com"}</span><span><MapPin size={15}/>{data.address || "Alamat perusahaan"}</span></div>
     </div> : <div className="admin-content-preview-card">
-      {validImage(image) && <div className="admin-content-preview-image"><Image src={image} alt={title} fill sizes="480px" unoptimized /></div>}
+      {validImage(image) && <div className="admin-content-preview-image"><Image src={imageThumbnailUrl(image, 960, 640)} alt={title} fill sizes="(max-width: 700px) 90vw, 480px" loading="lazy" /></div>}
       <div><small>{kind === "product" ? (data.category || "Kategori produk") : (data.collection || "Konten")}</small><h3>{title}</h3><p>{summary}</p>{data.cta_label && <span className="admin-preview-cta">{data.cta_label}</span>}</div>
     </div>}
   </div>;

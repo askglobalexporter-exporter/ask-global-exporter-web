@@ -302,16 +302,22 @@ export async function saveCompanySettingsAction(formData: FormData) {
 }
 
 export async function updateInquiryStatusAction(formData: FormData) {
-  const { user, supabase } = await requireAdmin("inquiries.write");
-  const type = text(formData, "type") as "rfq" | "sample";
-  const id = text(formData, "id");
-  const status = text(formData, "status");
+  return updateInquiryStatusMutation({
+    type: text(formData, "type") as "rfq" | "sample",
+    id: text(formData, "id"),
+    status: text(formData, "status"),
+  });
+}
+
+export async function updateInquiryStatusMutation({ type, id, status }: { type:"rfq"|"sample";id:string;status:string }) {
+  const session = await requireAdmin("inquiries.write");
+  const { user, supabase } = session;
   const table = type === "sample" ? "sample_requests" : "quote_requests";
   const { error } = await supabase.from(table).update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
   await supabase.from("inquiry_activity").insert({ inquiry_type: type, inquiry_id: Number(id), action: `Status changed to ${status}`, actor_id: user.id });
-  await writeAudit("inquiry.status_updated", type, id, { status });
-  revalidatePath("/admin/inquiries"); revalidatePath("/admin");
+  await writeAudit("inquiry.status_updated", type, id, { status }, session);
+  return { id, status };
 }
 
 export async function createMediaFolderAction(formData: FormData) {
@@ -328,19 +334,33 @@ export async function registerMediaAssetAction(payload: {
   mime_type: string; size_bytes: number; width?: number; height?: number; alt_text?: string;
   provider: "imagekit"; provider_file_id: string;
 }) {
-  const { user, supabase } = await requireAdmin("media.write");
-  const { error } = await supabase.from("media_assets").insert({ ...payload, uploaded_by: user.id });
+  return registerMediaAssetsAction([payload]);
+}
+
+export async function registerMediaAssetsAction(payloads: Array<{
+  folder_id: string | null; filename: string; storage_path: string; public_url: string;
+  mime_type: string; size_bytes: number; width?: number; height?: number; alt_text?: string;
+  provider: "imagekit"; provider_file_id: string;
+}>) {
+  if (!payloads.length) return [];
+  const session = await requireAdmin("media.write");
+  const { user, supabase } = session;
+  const { error } = await supabase.from("media_assets").insert(payloads.map((payload)=>({ ...payload, uploaded_by:user.id })));
   if (error) throw new Error(error.message);
-  await writeAudit("media.uploaded", "media", payload.storage_path, { filename: payload.filename });
-  revalidatePath("/admin/media");
+  await writeAudit("media.uploaded", "media", undefined, { count:payloads.length, filenames:payloads.map((item)=>item.filename) }, session);
+  return payloads.map((item)=>item.public_url);
 }
 
 export async function deleteMediaAssetAction(formData: FormData) {
-  const { supabase } = await requireAdmin("media.write");
-  const id = text(formData, "id");
-  const storagePath = text(formData, "storage_path");
-  const provider = text(formData, "provider");
-  const providerFileId = text(formData, "provider_file_id");
+  return deleteMediaAssetMutation({
+    id:text(formData, "id"), storagePath:text(formData, "storage_path"),
+    provider:text(formData, "provider"), providerFileId:text(formData, "provider_file_id"),
+  });
+}
+
+export async function deleteMediaAssetMutation({ id, storagePath, provider, providerFileId }: { id:string;storagePath:string;provider:string;providerFileId:string }) {
+  const session = await requireAdmin("media.write");
+  const { supabase } = session;
   if (provider === "imagekit" && providerFileId) {
     const privateKey = process.env.IMAGEKIT_PRIVATE_KEY;
     if (!privateKey) throw new Error("ImageKit private key is not configured.");
@@ -354,8 +374,8 @@ export async function deleteMediaAssetAction(formData: FormData) {
   }
   const { error } = await supabase.from("media_assets").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  await writeAudit("media.deleted", "media", id, { storagePath, provider });
-  revalidatePath("/admin/media");
+  await writeAudit("media.deleted", "media", id, { storagePath, provider }, session);
+  return { id };
 }
 
 export async function inviteAdminAction(formData: FormData) {

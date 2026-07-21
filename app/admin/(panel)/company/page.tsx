@@ -10,7 +10,7 @@ export const metadata = { title: "Identitas Perusahaan" };
 
 export default async function CompanySettingsPage() {
   const { supabase } = await requireAdmin("homepage.write");
-  const { data } = await supabase.from("company_settings").select("*").eq("singleton", true).maybeSingle();
+  const { data } = await supabase.from("company_settings").select("brand_name,legal_name,tagline,description,email,whatsapp_number,whatsapp_display,address,maps_url,service_area,business_hours,logo_url,whatsapp_logo_url").eq("singleton", true).maybeSingle();
   const settings: CompanySettings = { ...defaultCompanySettings, ...(data as Partial<CompanySettings> | null) };
 
   return <>

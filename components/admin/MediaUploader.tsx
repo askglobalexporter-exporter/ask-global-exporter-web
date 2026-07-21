@@ -3,7 +3,7 @@
 import { ChangeEvent, useState, useTransition } from "react";
 import { ImageUp, LoaderCircle } from "lucide-react";
 import { upload as uploadToImageKit } from "@imagekit/next";
-import { registerMediaAssetAction } from "@/app/admin/actions";
+import { registerMediaAssetsAction } from "@/app/admin/actions";
 
 async function compressToWebP(file: File) {
   if (!file.type.startsWith("image/") || file.type === "image/gif") {
@@ -57,17 +57,17 @@ export function MediaUploader({ folders }: { folders: Array<{ id: string; name: 
     startTransition(async () => {
       try {
         const selectedFolder = folders.find((item) => item.id === folder);
-        for (const file of files) {
-          const converted = await compressToWebP(file);
+        const convertedFiles = await Promise.all(files.map(compressToWebP));
+        for (const converted of convertedFiles) {
           if (converted.blob.size > 10 * 1024 * 1024) {
             throw new Error(`${converted.filename} is larger than 10 MB.`);
           }
-
+        }
+        const authResponse = await fetch("/api/admin/imagekit-auth", { cache: "no-store" });
+        const auth = await authResponse.json() as UploadAuth;
+        if (!authResponse.ok) throw new Error(auth.error || "ImageKit upload is not configured.");
+        const uploads = await Promise.all(convertedFiles.map(async (converted) => {
           const safe = converted.filename.toLowerCase().replace(/[^a-z0-9.-]+/g, "-");
-          const authResponse = await fetch("/api/admin/imagekit-auth", { cache: "no-store" });
-          const auth = await authResponse.json() as UploadAuth;
-          if (!authResponse.ok) throw new Error(auth.error || "ImageKit upload is not configured.");
-
           const result = await uploadToImageKit({
             file: converted.blob,
             fileName: safe,
@@ -83,8 +83,7 @@ export function MediaUploader({ folders }: { folders: Array<{ id: string; name: 
           if (!result.fileId || !result.filePath || !result.url) {
             throw new Error("ImageKit did not return complete file details.");
           }
-
-          await registerMediaAssetAction({
+          return {
             folder_id: folder || null,
             filename: result.name || converted.filename,
             storage_path: result.filePath,
@@ -95,8 +94,9 @@ export function MediaUploader({ folders }: { folders: Array<{ id: string; name: 
             height: result.height ?? converted.height,
             provider: "imagekit",
             provider_file_id: result.fileId,
-          });
-        }
+          } as const;
+        }));
+        await registerMediaAssetsAction(uploads);
         setMessage(`${files.length} file${files.length > 1 ? "s" : ""} uploaded to ImageKit and optimized.`);
         input.value = "";
       } catch (error) {

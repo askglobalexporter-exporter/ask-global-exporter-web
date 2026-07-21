@@ -1,11 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { ChangeEvent, useEffect, useId, useState, useTransition } from "react";
 import { ArrowLeft, ArrowRight, ImagePlus, Images, LoaderCircle, Trash2 } from "lucide-react";
 import { upload as uploadToImageKit } from "@imagekit/next";
-import { registerMediaAssetAction } from "@/app/admin/actions";
-import { MediaLibraryPicker } from "./MediaLibraryPicker";
+import { registerMediaAssetsAction } from "@/app/admin/actions";
+import { imageThumbnailUrl } from "@/lib/admin/media";
+
+const MediaLibraryPicker = dynamic(() => import("./MediaLibraryPicker").then((module) => module.MediaLibraryPicker), {
+  loading: () => null,
+  ssr: false,
+});
 
 type UploadAuth = {
   token: string;
@@ -61,12 +67,8 @@ async function prepareImage(file: File) {
   };
 }
 
-async function uploadImage(file: File, folder: string): Promise<UploadedImage> {
+async function uploadImage(file: File, folder: string, auth: UploadAuth): Promise<UploadedImage> {
   const prepared = await prepareImage(file);
-  const authResponse = await fetch("/api/admin/imagekit-auth", { cache: "no-store" });
-  const auth = await authResponse.json() as UploadAuth;
-  if (!authResponse.ok) throw new Error(auth.error || "Fitur upload foto belum dikonfigurasi.");
-
   const result = await uploadToImageKit({
     file: prepared.blob,
     fileName: prepared.filename,
@@ -142,10 +144,11 @@ export function ImageUploadField({
 
     startTransition(async () => {
       try {
-        const uploaded: string[] = [];
-        for (const file of files) {
-          const image = await uploadImage(file, folder);
-          await registerMediaAssetAction({
+        const authResponse = await fetch("/api/admin/imagekit-auth", { cache: "no-store" });
+        const auth = await authResponse.json() as UploadAuth;
+        if (!authResponse.ok) throw new Error(auth.error || "Fitur upload foto belum dikonfigurasi.");
+        const images = await Promise.all(files.map((file)=>uploadImage(file, folder, auth)));
+        await registerMediaAssetsAction(images.map((image)=>({
             folder_id: null,
             filename: image.name,
             storage_path: image.filePath,
@@ -156,9 +159,8 @@ export function ImageUploadField({
             height: image.height,
             provider: "imagekit",
             provider_file_id: image.fileId,
-          });
-          uploaded.push(image.url);
-        }
+          })));
+        const uploaded = images.map((image)=>image.url);
         setUrls((current) => multiple ? [...current, ...uploaded] : uploaded.slice(-1));
         setMessage(`${uploaded.length} foto berhasil di-upload dan siap disimpan.`);
         input.value = "";
@@ -175,7 +177,7 @@ export function ImageUploadField({
     <span className="admin-image-upload-label">{label}</span>
     {urls.length > 0 && <div className={`admin-image-preview-grid ${multiple ? "is-multiple" : ""}`}>
       {urls.map((url, index) => <div className="admin-image-preview" key={`${url}-${index}`}>
-        <Image src={url} alt={`Preview ${label} ${index + 1}`} fill sizes="160px" unoptimized />
+        <Image src={imageThumbnailUrl(url, 320, 240)} alt={`Preview ${label} ${index + 1}`} fill sizes="(max-width: 640px) 42vw, 160px" loading="lazy" />
         <div className="admin-image-preview-actions">
           {multiple && <>
             <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Geser foto ke kiri"><ArrowLeft size={13} /></button>

@@ -39,13 +39,14 @@ test("admin image fields upload directly to ImageKit", async () => {
     source("app/admin/(panel)/seo/page.tsx"),
   ]);
   assert.match(field, /uploadToImageKit/);
-  assert.match(field, /registerMediaAssetAction/);
+  assert.match(field, /registerMediaAssetsAction/);
   assert.match(field, /type="file"/);
   assert.match(field, /Pilih dari Media Library/);
   assert.match(picker, /api\/admin\/media-library/);
   assert.match(picker, /Semua folder/);
   assert.match(libraryRoute, /roleCan\(session\.profile\.role, "media\.read"\)/);
-  assert.match(libraryRoute, /\.limit\(60\)/);
+  assert.match(libraryRoute, /PAGE_SIZE = 24/);
+  assert.match(libraryRoute, /\.range\(/);
   assert.match(products, /name="gallery_images"/);
   assert.match(content, /name="featured_image_url"/);
   assert.match(homepage, /name="image_url"/);
